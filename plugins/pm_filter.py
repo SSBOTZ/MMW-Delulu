@@ -42,6 +42,36 @@ NON_IMG = """<b>‼️ FILE NOT FOUND ? ‼️
 
 3️⃣ മൂവിക്ക് വേണ്ടി മെസ്സേജ് അയക്കുമ്പോൾ മൂവിയുടെ പേര് ഇറങ്ങിയ വർഷം മാത്രം അയക്കുക..!!</b>"""
 
+
+CAPTIONS = [
+    lambda u, s: f"<b>👋🏻 𝐇𝐞𝐲 {u}\n📂 𝐘𝐨𝐮𝐫 {s} 𝐟𝐢𝐥𝐞𝐬 𝐚𝐫𝐞 𝐫𝐞𝐚𝐝𝐲 ✅</b>",
+    lambda u, s: f"<b>✨ ʜᴇʏ {u}\n📁 ʏᴏᴜʀ {s} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🚀</b>",
+    lambda u, s: f"<b>👑 𝓗𝓮𝔂 {u}\n📫 𝓨𝓸𝓾𝓻 {s} 𝓯𝓲𝓵𝓮𝓼 𝓪𝓻𝓮 𝓻𝓮𝓪𝓭𝔂 ✨</b>",
+    lambda u, s: f"<b>⚡ ʜᴇʏ 👋 {u}\n📦 ʏᴏᴜʀ {s} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🔥</b>",
+    lambda u, s: f"<b>🌈 Ｈｅｙ {u}\n📥 Ｙｏｕｒ {s} Ｆｉｌｅｓ ａｒｅ Ｒｅａｄｙ ✅</b>",
+    lambda u, s: f"<b>🔥 𝙃𝙚𝙮 {u}\n📫 𝙔𝙤𝙪𝙧 {s} 𝙛𝙞𝙡𝙚𝙨 𝙖𝙧𝙚 𝙧𝙚𝙖𝙙𝙮 ✅</b>",
+    lambda u, s: f"<b>🌸 Ｈｅｙ {u}\n📫 Ｙｏᴜʀ {s} Ｆｉｌᴇs Ａʀᴇ Ｒᴇａᴅｙ ✅</b>",
+    lambda u, s: f"<b>💫 𝓗𝓮𝔂 {u}\n📦 𝓨𝓸𝓾𝓻 {s} 𝓯𝓲𝓵𝓮𝓼 𝓪𝓻𝓮 𝓻𝓮𝓪𝓭𝔂 💎</b>",
+    lambda u, s: f"<b>🖤 ʜᴇʏ 👋 {u}\n📂 ʏᴏᴜʀ {s} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🎉</b>",
+    lambda u, s: f"<b>🎬 ʜᴇʏ 👋 {u}\n📂 ʏᴏᴜʀ {s} ꜰɪʟᴇꜱ ᴀʀᴇ ᴡᴀɪᴛɪɴɢ ✨</b>"
+]
+
+async def auto_delete(original_msg: Message, reply_msg: Message):
+    try:
+        await asyncio.sleep(600)
+        await original_msg.delete()
+        await reply_msg.delete()
+    except:
+        pass
+
+async def spell_check(original_msg: Message, reply_msg: Message):
+    try:
+        await asyncio.sleep(10)
+        await original_msg.delete()
+        await reply_msg.delete()
+    except:
+        pass
+
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filters(client, message):
     await auto_filter(client, message)    
@@ -50,90 +80,157 @@ async def give_filters(client, message):
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
     if int(req) not in [query.from_user.id, 0]:
-        return await query.answer("oKda", show_alert=True)
-    
+        return await query.answer("😁 𝗛𝗲𝘆 𝗙𝗿𝗶𝗲𝗻𝗱, 𝗣𝗹𝗲𝗮𝘀𝗲 𝗦𝗲𝗮𝗿𝗰𝗵 𝗬𝗼𝘂𝗿𝘀𝗲𝗹𝗳.", show_alert=True)
+
     try:
-        offset = int(offset)        
-    except ValueError:
+        offset = int(offset)
+    except:
         offset = 0
-        
+
     search = BUTTONS.get(key)
     if not search:
-        await query.answer("You are using one of my old messages, please send the request again.", show_alert=True)
-        return
+        return await query.answer("𝐋𝐢𝐧𝐤 𝐄𝐱𝐩𝐢𝐫𝐞𝐝. 𝗣𝗹𝗲𝗮𝘀𝗲 𝗦𝗲𝗮𝗿𝗰𝗵 𝗔𝗴𝗮𝗶𝗻 🙂.", show_alert=True)
 
-    files, n_offset, total = await get_search_results(search, offset=offset, filter=True)
-    
-    try:
-        n_offset = int(n_offset)        
-    except ValueError:
-        n_offset = 0
-
-    if not files:
-        return
-    
+    files, n_offset, total = await get_search_results(search.lower(), offset=offset, filter=True)
     settings = await get_settings(query.message.chat.id)
-    
+
     if settings['button']:
         btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] ⊳ {file.file_name}", callback_data=f'files#{file.file_id}'
-                ),
-            ]
+            [InlineKeyboardButton(f"[{get_size(file.file_size)}] ⊳ {file.file_name}", callback_data=f'files#{file.file_id}')]
             for file in files
         ]
     else:
         btn = [
             [
-                InlineKeyboardButton(
-                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
-                ),
-                InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)}",
-                    callback_data=f'files_#{file.file_id}',
-                ),
+                InlineKeyboardButton(f"{file.file_name}", callback_data=f'files#{file.file_id}'),
+                InlineKeyboardButton(f"{get_size(file.file_size)}", callback_data=f'files_#{file.file_id}')
             ]
             for file in files
         ]
-        
-    if 0 < offset < 10:
+
+    if 0 < offset <= 10:
         off_set = 0
     elif offset == 0:
         off_set = None
     else:
         off_set = offset - 10
 
+    page_num = math.ceil(int(offset) / 10) + 1
+    total_pages = math.ceil(total / 10)
+
     if n_offset == 0:
-        btn.append(
-            [InlineKeyboardButton("↲ Bᴀᴄ𝗄", callback_data=f"next_{req}_{key}_{off_set}"),
-             InlineKeyboardButton(f"📖 𝑷𝒂𝒈𝒆𝒔 {math.ceil((offset) / 10) + 1} / {math.ceil(total / 10)}",
-                                  callback_data="pages")]
-        )
-        
+        if off_set is not None:
+            btn.append([
+                InlineKeyboardButton("↲ Bᴀᴄ𝗄", callback_data=f"next_{req}_{key}_{off_set}"),
+                InlineKeyboardButton("➥ 𝗣𝗮𝗴𝗲", callback_data="pages"),
+                InlineKeyboardButton(f"{page_num}/{total_pages}", callback_data="pages")
+            ])
+        else:
+            btn.append([InlineKeyboardButton(f"{page_num}/{total_pages}", callback_data="pages")])
     elif off_set is None:
-        btn.append(
-            [InlineKeyboardButton(f"📖 𝑷𝒂𝒈𝒆𝒔 {math.ceil((offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
-             InlineKeyboardButton("Nᴇxᴛ ⤷", callback_data=f"next_{req}_{key}_{n_offset}")])
-        
+        btn.append([
+            InlineKeyboardButton("➥ 𝗣𝗮𝗴𝗲", callback_data="pages"),
+            InlineKeyboardButton(f"{page_num}/{total_pages}", callback_data="pages"),
+            InlineKeyboardButton("Nᴇxᴛ ⤷", callback_data=f"next_{req}_{key}_{n_offset}")
+        ])
     else:
-        btn.append(
+        btn.extend([
+            [InlineKeyboardButton(f"{page_num} / {total_pages}", callback_data="pages")],
             [
                 InlineKeyboardButton("↲ Bᴀᴄ𝗄", callback_data=f"next_{req}_{key}_{off_set}"),
-                InlineKeyboardButton(f"📖 𝑷𝒂𝒈𝒆𝒔 {math.ceil((offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
                 InlineKeyboardButton("Nᴇxᴛ ⤷", callback_data=f"next_{req}_{key}_{n_offset}")
-            ],
-        )
-        
+            ]
+        ])
+
     try:
-        await query.edit_message_reply_markup(
-            reply_markup=InlineKeyboardMarkup(btn)
-        )
+        await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
     except MessageNotModified:
         pass
+
     await query.answer()
     temp.SEND_ALL_TEMP[key] = files
+    
+async def auto_filter(client, msg):
+    if not msg.text:
+        return
 
+    settings = await get_settings(msg.chat.id)
+
+    if msg.text.startswith("/"):
+        await asyncio.sleep(5)
+        await msg.delete()
+        return
+
+    if re.search(r'(?im)(?:https?://|www\.|t\.me/|telegram\.dog/)\S+|@[a-z0-9_]{5,32}\b', msg.text):
+        await msg.delete()
+        return
+
+    if re.findall(r"((^/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", msg.text):
+        await msg.delete()
+        return
+
+    if len(msg.text) < 2:
+        await msg.delete()
+        return
+
+    search = msg.text.lower().strip()
+    files, offset, total_results = await get_search_results(search, offset=0, filter=True)
+
+    if not files:
+        reqst_gle = search.replace(" ", "+")
+        btn_google = InlineKeyboardButton(
+            "🔍 𝗖𝗼𝗿𝗿𝗲𝗰𝘁 𝗦𝗽𝗲𝗹𝗹𝗶𝗻𝗴 (𝖦𝗈𝗈𝗴𝗅𝖾) 🔎",
+            url=f"https://www.google.com/search?q={reqst_gle}"
+        )
+        keyboard = InlineKeyboardMarkup([[btn_google]])
+        warn_msg = await msg.reply_text(
+            text=(
+                f"<b>❝ 𝖧𝖾𝗒 {msg.from_user.mention} താഴെ ഉള്ള കാര്യങ്ങൾ ശ്രദ്ധിക്കുക ❞\n\n"
+                f"🔹കറക്റ്റ് സ്പെല്ലിംഗിൽ ചോദിക്കുക. (ഇംഗ്ലീഷിൽ മാത്രം)\n\n"
+                f"🔸സിനിമകൾ ഇംഗ്ലീഷിൽ Type ചെയ്ത് മാത്രം ചോദിക്കുക.\n\n"
+                f"🔹OTT റിലീസ് ആകാത്ത സിനിമകൾ ചോദിക്കരുത്.\n\n"
+                f"🔸സിനിമയുടെ പേര് [വർഷം ഭാഷ] ഈ രീതിയിൽ ചോദിക്കുക.\n\n"
+                f"🔹സിനിമ Request ചെയ്യുമ്പോൾ Symbols ഒഴിവാക്കുക. [+:;'*!-&.. etc !!!</b>"
+            ),
+            reply_markup=keyboard
+        )
+        asyncio.create_task(spell_check(msg, warn_msg))
+        return
+
+    pre = 'filep' if settings['file_secure'] else 'file'
+
+    if settings["button"]:
+        btn = [
+            [InlineKeyboardButton(f"[{get_size(file.file_size)}] ⊳ {file.file_name}", callback_data=f'{pre}#{file.file_id}')]
+            for file in files
+        ]
+    else:
+        btn = [
+            [
+                InlineKeyboardButton(file.file_name, callback_data=f'{pre}#{file.file_id}'),
+                InlineKeyboardButton(get_size(file.file_size), callback_data=f'{pre}#{file.file_id}')
+            ]
+            for file in files
+        ]
+
+    if offset:
+        key = f"{msg.chat.id}-{msg.id}"
+        BUTTONS[key] = search
+        req = msg.from_user.id if msg.from_user else 0
+        btn.append([
+            InlineKeyboardButton("➥ 𝗣𝗮𝗴𝗲", callback_data="pages"),
+            InlineKeyboardButton(f"1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
+            InlineKeyboardButton("Nᴇxᴛ ⤷", callback_data=f"next_{req}_{key}_{offset}")
+        ])
+
+    cap_func = random.choice(CAPTIONS)
+    caption = cap_func(msg.from_user.mention if msg.from_user else "Sir", search.replace(" ", "_"))
+
+    result_msg = await msg.reply_text(caption, reply_markup=InlineKeyboardMarkup(btn))
+    asyncio.create_task(auto_delete(msg, result_msg))
+
+
+    
 @Client.on_callback_query(filters.regex(r"^spolling"))
 async def advantage_spoll_choker(bot, query):
     _, user, movie_ = query.data.split('#')
@@ -855,159 +952,3 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit_reply_markup(reply_markup)
     await query.answer('Piracy Is Crime')
 
-async def auto_filter(client, msg):
-    message = msg
-    settings = await get_settings(message.chat.id)
-
-    if not message.text:
-        return
-
-    if message.text.startswith("/"):
-        return
-
-    if re.findall(r"((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
-        return
-
-    if len(message.text) < 100:
-        search = message.text.strip()
-
-        files, offset, total_results = await get_search_results(
-            search.lower(), offset=0, filter=True
-        )
-
-        if not files:
-            reqst_gle = search.replace(" ", "+")
-
-            btn_google = InlineKeyboardButton(
-                "🔎 𝗖𝗼𝗿𝗿𝗲𝗰𝘁 𝗦𝗽𝗲𝗹𝗹𝗶𝗻𝗴 (Google) 🔍",
-                url=f"https://www.google.com/search?q={reqst_gle}"
-            )
-
-            keyboard = InlineKeyboardMarkup([[btn_google]])
-
-            try:
-                reply_msg = await msg.reply_text(
-                    text=f"""<b>❝ 𝖧𝖾𝗒 {msg.from_user.mention} താഴെ ഉള്ള കാര്യങ്ങൾ ശ്രദ്ധിക്കുക ❞
-
-☞ നിങ്ങൾ ആവശ്യപ്പെട്ട സിനിമയുടെ പേര്  <code>{search}</code>
-
-🔹കറക്റ്റ് സ്പെല്ലിംഗിൽ ചോദിക്കുക. (ഇംഗ്ലീഷിൽ മാത്രം)
-
-🔸സിനിമകൾ ഇംഗ്ലീഷിൽ Type ചെയ്ത് മാത്രം ചോദിക്കുക.
-
-🔹OTT റിലീസ് ആകാത്ത സിനിമകൾ ചോദിക്കരുത്.
-
-🔸സിനിമയുടെ പേര് [വർഷം ഭാഷ] ഈ രീതിയിൽ ചോദിക്കുക.
-
-🔹സിനിമ Request ചെയ്യുമ്പോൾ Symbols ഒഴിവാക്കുക. [+:;'*!-&.. etc !!!</b>""",
-                    reply_markup=keyboard
-                )
-
-                await asyncio.sleep(10)
-                await msg.delete()
-                await reply_msg.delete()
-
-            except Exception:
-                return
-            return
-
-    else:
-        return
-
-    pre = 'filep' if settings.file_secure else 'file'
-    key = f"{message.chat.id}-{message.id}"
-    temp.SEND_ALL_TEMP[key] = files
-    if settings['button']:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] ⊳ {file.file_name}", callback_data=f'files#{file.file_id}'
-                ),
-            ]
-            for file in files
-        ]
-    else:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
-                ),
-                InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)}",
-                    callback_data=f'files_#{file.file_id}',
-                ),
-            ]
-            for file in files
-        ]                
-    if offset != "":
-        try:
-            offset = int(offset)
-        except ValueError:
-            offset = 0
-    else:
-        offset = 0    
-        
-    if offset != "":
-        key = f"{message.chat.id}-{message.id}"
-        BUTTONS[key] = search
-        req = message.from_user.id if message.from_user else 0
-        btn.append(
-            [InlineKeyboardButton(text=f"📖 𝑷𝒂𝒈𝒆𝒔 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-            InlineKeyboardButton(text="Nᴇxᴛ ⤷", callback_data=f"next_{req}_{key}_{offset}")]
-       )
-    else:
-        btn.append([InlineKeyboardButton(text="1/1", callback_data="pages")])
-    imdb = await get_poster(search, file=(files[0]).file_name) if settings["imdb"] else None
-    TEMPLATE = settings['template']
-    if imdb:
-        cap = TEMPLATE.format(
-            query=search,
-            title=imdb['title'],
-            votes=imdb['votes'],
-            aka=imdb["aka"],
-            seasons=imdb["seasons"],
-            box_office=imdb['box_office'],
-            localized_title=imdb['localized_title'],
-            kind=imdb['kind'],
-            imdb_id=imdb["imdb_id"],
-            cast=imdb["cast"],
-            runtime=imdb["runtime"],
-            countries=imdb["countries"],
-            certificates=imdb["certificates"],
-            languages=imdb["languages"],
-            director=imdb["director"],
-            writer=imdb["writer"],
-            producer=imdb["producer"],
-            composer=imdb["composer"],
-            cinematographer=imdb["cinematographer"],
-            music_team=imdb["music_team"],
-            distributors=imdb["distributors"],
-            release_date=imdb['release_date'],
-            year=imdb['year'],
-            genres=imdb['genres'],
-            poster=imdb['poster'],
-            plot=imdb['plot'],
-            rating=imdb['rating'],
-            url=imdb['url'],
-            **locals()
-        )
-    else:
-        cap = f"<b>𝖧𝖾𝗒 : {msg.from_user.mention}\n𝖥𝗂𝗅𝗆 : {search}\n𝖱𝖾𝗌𝗎𝗅𝗍𝗌 : {total_results}</b>"         
-    if imdb and imdb.get('poster'):
-        try:
-            mat = await message.reply_photo(photo=imdb.get('poster'), caption=cap[:1024],
-                                      reply_markup=InlineKeyboardMarkup(btn))
-           # await message.delete()
-        except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-            pic = imdb.get('poster')
-            poster = pic.replace('.jpg', "._V1_UX360.jpg")
-            await message.reply_photo(photo=poster, caption=cap[:1024], reply_markup=InlineKeyboardMarkup(btn))
-            
-          #  await message.delete()
-        except Exception as e:
-            logger.exception(e)
-            await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-            
-          #  await message.delete()
-    else:
-        await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
