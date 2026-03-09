@@ -143,7 +143,7 @@ async def save_file(media):
         logger.error(f"❌ Validation error → {e}")
         return False
 
-async def get_search_results(query, file_type=None, max_results=10, offset=0):
+async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
 
     query = query.strip()
 
