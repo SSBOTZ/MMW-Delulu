@@ -437,9 +437,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
         # get_file_details returns a dict directly, not a list
         files = files_
-        title = files.get("file_name", "Unknown")
-        size = get_size(files.get("file_size", 0))
-        f_caption = files.get("file_name", "")
+        title = files.file_name
+        size = get_size(files.file_size)
+        f_caption = files.file_name
 
         settings = await get_settings(query.message.chat.id)
 
@@ -486,7 +486,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             )
 
 
-    if query.data.startswith("files#"):
+    elif query.data.startswith("files#"):
         # Handler for pagination file buttons (files# prefix)
         try:
             ident, file_id = query.data.split("#", 1)
