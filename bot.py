@@ -42,7 +42,7 @@ name = "main"
 
 DB_OPTIONS = [
     (clientDB, DATABASE_URI, "🌐 Primary DB"),
-    (clientDB2, DATABASE_URI2, "🥈 Second DB"),
+    (clientDB2, SECONDDB_URI, "🥈 Second DB"),
     (clientDB3, DATABASE_URI3, "🧩 Third DB"),
     (clientDB4, DATABASE_URI4, "📁 Fourth DB"),
     (clientDB5, DATABASE_URI5, "💾 Fifth DB"),
@@ -54,7 +54,7 @@ pyroutils.MIN_CHANNEL_ID = -100999999999999
 RESTART_INTERVAL = 24 * 60 * 60
 DB_SIZE_LIMIT_MB = 160
 MAX_DB_CAPACITY_MB = 512
-KEEP_ALIVE_URL = ""
+KEEP_ALIVE_URL = "https://moderate-paulie-mmwgoku-46260985.koyeb.app/" #koyeb & render service url
 ALIVE_INTERVAL = 12
 
 async def alive():
