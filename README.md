@@ -120,11 +120,11 @@
 | `API_HASH` | Get from [telegram.org](https://my.telegram.org/apps) |
 | `CHANNELS` | Username or ID of channel or group. Separate multiple IDs by space |
 | `ADMINS` | Username or ID of Admin. Separate multiple Admins by space |
-| `DATABASE_URI` | MongoDB URI (required when `SQLDB` is not set) |
-| `DATABASE_URI2` | MongoDB URI (required when `SQLDB` is not set) |
-| `DATABASE_URI3` | MongoDB URI (required when `SQLDB` is not set) |
-| `DATABASE_URI4` | MongoDB URI (required when `SQLDB` is not set) |
-| `DATABASE_URI5` | MongoDB URI (required when `SQLDB` is not set) |
+| `DATABASE_URI` | MongoDB URI (required ) |
+| `DATABASE_URI2` | MongoDB URI (required ) |
+| `DATABASE_URI3` | MongoDB URI (required ) |
+| `DATABASE_URI4` | MongoDB URI (required ) |
+| `DATABASE_URI5` | MongoDB URI (required ) |
 | `DATABASE_NAME` | Name of the database in MongoDB |
 | `LOG_CHANNEL` | A Telegram channel to log the bot's activities. Bot must be admin |
 
