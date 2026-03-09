@@ -22,9 +22,9 @@ class script(object):
 📢 𝑼𝒑𝒅𝒂𝒕𝒆 𝑪𝒉𝒂𝒏𝒏𝒆𝒍 : <a href=https://t.me/mallumovieworldmain2> MMW BOTZ </a></b>"""
 
     AUTOFILTER_TXT = """<b>
- Bro Or Sis, ഈ ഒരു ബോട്ട് <a href=https://t.me/mallumovieworldmain3> 𝐆𝐑𝐎𝐔𝐏 </a> ൻ്റെ Aᴜᴛᴏ Fɪʟᴛᴇʀ Bᴏᴛ ᴠ1 ആണ്, ബോട്ട് പുതിയതായിട്ട് വരുന്ന തീയറ്റർ പ്രിന്റ് മാത്രം ലഭിക്കുന്ന ബോട്ട് ആണ് ..!!  🤗⚠
+ Bro Or Sis, ഈ ഒരു ബോട്ട് <a href=https://t.me/mallumovieworldmain3> 𝐆𝐑𝐎𝐔𝐏 </a> ൻ്റെ Aᴜᴛᴏ Fɪʟᴛᴇʀ Bᴏᴛ ᴠ1 ആണ്, ബോട്ട് പഴയതും പുതിയതുമായ സിനിമകൾ മാത്രം ലഭിക്കുന്ന ബോട്ട് ആണ് ..!!  🤗⚠
 
-️📌 𝗔𝗻𝘆 𝗛𝗲𝗹𝗽 𝗣𝗹𝗲𝗮𝘀𝗲 𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗔𝗱𝗺𝗶𝗻 : @MCU_ADMIN_V1_BOT</b>"""
+️📌 𝗔𝗻𝘆 𝗛𝗲𝗹𝗽 𝗣𝗹𝗲𝗮𝘀𝗲 𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗔𝗱𝗺𝗶𝗻 : @Mrkimebot</b>"""
 
     BOTINFO_TXT = """<b>𝖧𝖾𝗒 𝖡𝗋𝗈 𝖨𝖺𝗆 𝖧𝖺𝗉𝗉𝗒 🖤 𝖳𝗈 𝖧𝖺𝗏𝖾 𝖸𝗈𝗎
  
@@ -34,7 +34,7 @@ class script(object):
 
 ✫ 𝖸𝗈𝗎 𝖢𝖺𝗇 𝖲𝖾𝗇𝖽 𝖡𝗈𝗍 𝖠𝖽𝗆𝗂𝗇 𝖬𝖾𝗌𝗌𝖺𝗀𝖾 𝖥𝗈𝗋 𝖴𝗉𝗅𝗈𝖺𝖽𝗂𝗇𝗀 𝖬𝗈𝗏𝗂𝖾𝗌, 𝖯𝖺𝗂𝖽 𝖯𝗋𝗈𝗆𝗈𝗍𝗂𝗈𝗇 𝖾𝗍𝖼</b>"""
     
-    SORCE_TXT = """<b>കൊട്ക്ക്ണില്ല്യാ...... [PRIVATE REPO]</b>"""
+    SORCE_TXT = """<b>https://github.com/mmwbotzmain/MMW-Delulu</b>"""
     
     MOVDOW_TXT = """<b> 1. 𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐌𝐨𝐯𝐢𝐞𝐬 𝐆𝐫𝐨𝐮𝐩 - 𝐂𝐥𝐢𝐜𝐤 𝐇𝐞𝐫𝐞
 
@@ -65,7 +65,7 @@ class script(object):
 𝖣𝗈𝗇'𝗍 𝖴𝗌𝖾 𝖲𝗒𝗆𝖻𝗈𝗅𝗌 𝖶𝗁𝗂𝗅𝖾 𝖱𝖾𝗊𝗎𝖾𝗌𝗍 𝖬𝗈𝗏𝗂𝖾𝗌 𝗅𝗂𝗄𝖾 (+:;'!-|...𝖾𝗍𝖼)
 
 𝖨𝖿 𝖸𝗈𝗎 𝖣𝗈𝗇'𝗍 𝖦𝖾𝗍 𝖬𝗈𝗏𝗂𝖾𝗌 𝖠𝗇𝖽 𝖲𝖾𝗋𝗂𝖾𝗌⌛️
-𝖢𝗈𝗇𝗍𝖺𝖼𝗍 𝖠𝖽𝗆𝗂𝗇 - @MCU_ADMIN_V1_BOT
+𝖢𝗈𝗇𝗍𝖺𝖼𝗍 𝖠𝖽𝗆𝗂𝗇 - @Mrkimebot
 
 𝖬𝗈𝗏𝗂𝖾𝗌 𝖱𝖾𝗊𝗎𝖾𝗌𝗍𝗂𝗇𝗀 𝖥𝗈𝗋𝗆𝖺𝗍
 𝖪𝗎𝗋𝗎𝗉 𝖬𝗈𝗏𝗂𝖾❌
