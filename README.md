@@ -121,7 +121,7 @@
 | `CHANNELS` | Username or ID of channel or group. Separate multiple IDs by space |
 | `ADMINS` | Username or ID of Admin. Separate multiple Admins by space |
 | `DATABASE_URI` | MongoDB URI (required ) |
-| `DATABASE_URI2` | MongoDB URI (required ) |
+| `SECONDDB_URI` | MongoDB URI (required ) |
 | `DATABASE_URI3` | MongoDB URI (required ) |
 | `DATABASE_URI4` | MongoDB URI (required ) |
 | `DATABASE_URI5` | MongoDB URI (required ) |
