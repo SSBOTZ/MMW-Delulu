@@ -16,8 +16,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, send_all, imdb
 from database.users_chats_db import db
-from database.ia_filterdb import Media, Media2, Media3, Media4, Media5, get_file_details, get_search_results, get_bad_files, db as clientDB, db2 as clientDB2, db3 as clientDB3, db4 as clientDB4, db5 as clientDB5
-from database.filters_mdb import find_gfilter, get_gfilters
+from database.ia_filterdb import Media, Media2, Media3, Media4, Media5, get_file_details, get_search_results, get_bad_files, db as clientDB, db2 as clientDB2, db3 as clientDB3, db4 as clientDB4, db5 as clientDB5from database.filters_mdb import find_gfilter, get_gfilters
 import logging
 
 logger = logging.getLogger(__name__)
@@ -72,10 +71,10 @@ async def spell_check(original_msg: Message, reply_msg: Message):
     except:
         pass
 
-@Client.on_message(filters.group & filters.text & filters.incoming)
-async def give_filters(client, message):
-    await auto_filter(client, message)    
-
+@Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
+async def give_filter(client, message):
+    await auto_filter(client, message)
+    
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
