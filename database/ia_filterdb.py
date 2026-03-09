@@ -71,7 +71,7 @@ async def choose_mediaDB():
 
     db_map = {
         DATABASE_URI: Media,
-        DATABASE_URI2: Media2,
+        SECONDDB_URI: Media2,
         DATABASE_URI3: Media3,
         DATABASE_URI4: Media4,
         DATABASE_URI5: Media5,
