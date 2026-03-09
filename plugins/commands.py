@@ -26,17 +26,8 @@ from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from info import *
 from Script import script
 from utils import *
-from database.users_chats_db import *
-from database.ia_filterdb import (
-    save_file,
-    Media, Media2, Media3, Media4, Media5,
-    db as clientDB,
-    db2 as clientDB2,
-    db3 as clientDB3,
-    db4 as clientDB4,
-    db5 as clientDB5
-)
-from database.ia_filterdb import*
+from database.users_chats_db import db
+from database.ia_filterdb import *
 from database.connections_mdb import active_connection
 from plugins.fsub import ForceSub
 
