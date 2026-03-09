@@ -43,6 +43,7 @@ class Media(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
 
     class Meta:
         collection_name = COLLECTION_NAME
@@ -56,6 +57,7 @@ class Media2(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
 
     class Meta:
         collection_name = COLLECTION_NAME
@@ -69,6 +71,7 @@ class Media3(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
 
     class Meta:
         collection_name = COLLECTION_NAME
@@ -82,6 +85,7 @@ class Media4(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
 
     class Meta:
         collection_name = COLLECTION_NAME
@@ -95,6 +99,7 @@ class Media5(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
 
     class Meta:
         collection_name = COLLECTION_NAME
@@ -137,13 +142,16 @@ async def save_file(media):
     file_name = re.sub(r"(_|\+|\-|\.|\[.*?\]|\@.*?|www.*?|MLM)", " ", str(media.file_name))
 
     try:
+        caption_obj = getattr(media, "caption", None)
+        caption_html = caption_obj.html if caption_obj else None
         file = saveMedia(
             file_id=file_id,
             file_ref=file_ref,
             file_name=file_name,
             file_size=media.file_size,
             file_type=media.file_type,
-            mime_type=media.mime_type
+            mime_type=media.mime_type,
+            caption=caption_html
         )
         await file.commit()
         logger.info(f"Saved {file_name}")
