@@ -435,10 +435,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if not files_:
             return await query.answer("No such file exist.", show_alert=True)
 
-        files = files_[0]
-        title = files.file_name
-        size = get_size(files.file_size)
-        f_caption = files.file_name
+        # get_file_details returns a dict directly, not a list
+        files = files_
+        title = files.get("file_name", "Unknown")
+        size = get_size(files.get("file_size", 0))
+        f_caption = files.get("file_name", "")
 
         settings = await get_settings(query.message.chat.id)
 
@@ -485,6 +486,68 @@ async def cb_handler(client: Client, query: CallbackQuery):
             )
 
 
+    if query.data.startswith("files#"):
+        # Handler for pagination file buttons (files# prefix)
+        try:
+            ident, file_id = query.data.split("#", 1)
+        except ValueError:
+            return await query.answer("Invalid request", show_alert=True)
+
+        files_ = await get_file_details(file_id)
+        if not files_:
+            return await query.answer("No such file exist.", show_alert=True)
+
+        # get_file_details returns a dict directly, not a list
+        files = files_
+        title = files.file_name
+        size = get_size(files.file_size)
+        f_caption = files.file_name
+
+        settings = await get_settings(query.message.chat.id)
+
+        if CUSTOM_FILE_CAPTION:
+            try:
+                f_caption = CUSTOM_FILE_CAPTION.format(
+                    file_name=title or "",
+                    file_size=size or "",
+                    file_caption=f_caption or "",
+                    mention=query.from_user.mention
+                )
+            except Exception as e:
+                logger.exception(e)
+
+        if not f_caption:
+            f_caption = title
+
+        try:
+            if (AUTH_CHANNEL or REQ_CHANNEL) and not await is_subscribed(client, query):
+                return await query.answer(
+                    url=f"https://t.me/{temp.U_NAME}?start=files_{file_id}"
+                )
+
+            if settings.get("botpm"):
+                return await query.answer(
+                    url=f"https://t.me/{temp.U_NAME}?start=files_{file_id}"
+                )
+
+            return await query.answer(
+                url=f"https://t.me/{temp.U_NAME}?start=files_{file_id}"
+            )
+
+        except UserIsBlocked:
+            await query.answer("Unblock the bot!", show_alert=True)
+
+        except PeerIdInvalid:
+            await query.answer(
+                url=f"https://t.me/{temp.U_NAME}?start=files_{file_id}"
+            )
+
+        except Exception:
+            await query.answer(
+                url=f"https://t.me/{temp.U_NAME}?start=files_{file_id}"
+            )
+
+
     elif query.data.startswith("checksub#"):
         if (AUTH_CHANNEL or REQ_CHANNEL) and not await is_subscribed(client, query):
             return await query.answer(
@@ -500,7 +563,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if not files_:
             return await query.answer("No such file exist.", show_alert=True)
 
-        files = files_[0]
+        # get_file_details returns a dict directly, not a list
+        files = files_
         title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.file_name
@@ -977,4 +1041,3 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
     await query.answer('Piracy Is Crime')
-
