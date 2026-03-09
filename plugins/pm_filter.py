@@ -1,5 +1,4 @@
 import asyncio
-lock = asyncio.Lock()
 import re
 import ast
 import random
@@ -23,6 +22,8 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
+lock = asyncio.Lock()
+
 BUTTONS = {}
 SPELL_CHECK = {}
 SEASON = {}
@@ -41,20 +42,6 @@ NON_IMG = """<b>‼️ FILE NOT FOUND ? ‼️
 2️⃣ നിങ്ങൾ ചോദിച്ച സിനിമ OTT റിലീസ് ആയതാണോ എന്ന് <a href=https://t.me/mallumovieworldmain2> MMW BOTZ 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 </a> യിൽ ചെക്ക് ചെയ്യുക..!!
 
 3️⃣ മൂവിക്ക് വേണ്ടി മെസ്സേജ് അയക്കുമ്പോൾ മൂവിയുടെ പേര് ഇറങ്ങിയ വർഷം മാത്രം അയക്കുക..!!</b>"""
-
-
-CAPTIONS = [
-    lambda u, s: f"<b>👋🏻 𝐇𝐞𝐲 {u}\n📂 𝐘𝐨𝐮𝐫 {s} 𝐟𝐢𝐥𝐞𝐬 𝐚𝐫𝐞 𝐫𝐞𝐚𝐝𝐲 ✅</b>",
-    lambda u, s: f"<b>✨ ʜᴇʏ {u}\n📁 ʏᴏᴜʀ {s} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🚀</b>",
-    lambda u, s: f"<b>👑 𝓗𝓮𝔂 {u}\n📫 𝓨𝓸𝓾𝓻 {s} 𝓯𝓲𝓵𝓮𝓼 𝓪𝓻𝓮 𝓻𝓮𝓪𝓭𝔂 ✨</b>",
-    lambda u, s: f"<b>⚡ ʜᴇʏ 👋 {u}\n📦 ʏᴏᴜʀ {s} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🔥</b>",
-    lambda u, s: f"<b>🌈 Ｈｅｙ {u}\n📥 Ｙｏｕｒ {s} Ｆｉｌｅｓ ａｒｅ Ｒｅａｄｙ ✅</b>",
-    lambda u, s: f"<b>🔥 𝙃𝙚𝙮 {u}\n📫 𝙔𝙤𝙪𝙧 {s} 𝙛𝙞𝙡𝙚𝙨 𝙖𝙧𝙚 𝙧𝙚𝙖𝙙𝙮 ✅</b>",
-    lambda u, s: f"<b>🌸 Ｈｅｙ {u}\n📫 Ｙｏᴜʀ {s} Ｆｉｌᴇs Ａʀᴇ Ｒᴇａᴅｙ ✅</b>",
-    lambda u, s: f"<b>💫 𝓗𝓮𝔂 {u}\n📦 𝓨𝓸𝓾𝓻 {s} 𝓯𝓲𝓵𝓮𝓼 𝓪𝓻𝓮 𝓻𝓮𝓪𝓭𝔂 💎</b>",
-    lambda u, s: f"<b>🖤 ʜᴇʏ 👋 {u}\n📂 ʏᴏᴜʀ {s} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🎉</b>",
-    lambda u, s: f"<b>🎬 ʜᴇʏ 👋 {u}\n📂 ʏᴏᴜʀ {s} ꜰɪʟᴇꜱ ᴀʀᴇ ᴡᴀɪᴛɪɴɢ ✨</b>"
-]
 
 async def auto_delete(original_msg: Message, reply_msg: Message):
     try:
@@ -173,13 +160,13 @@ async def auto_filter(client, msg):
         await msg.delete()
         return
 
-    search = msg.text.lower().strip()
+    search = msg.text.strip()
     files, offset, total_results = await get_search_results(search, offset=0, filter=True)
 
     if not files:
         reqst_gle = search.replace(" ", "+")
         btn_google = InlineKeyboardButton(
-            "🔍 𝗖𝗼𝗿𝗿𝗲𝗰𝘁 𝗦𝗽𝗲𝗹𝗹𝗶𝗻𝗴 (𝖦𝗈𝗈𝗴𝗅𝖾) 🔎",
+            "🔍 𝗖𝗼𝗿𝗿𝗲𝗰𝘁 𝗦𝗽𝗲𝗹𝗹𝗶𝗻𝗴 (Google) 🔎",
             url=f"https://www.google.com/search?q={reqst_gle}"
         )
         keyboard = InlineKeyboardMarkup([[btn_google]])
@@ -223,14 +210,10 @@ async def auto_filter(client, msg):
             InlineKeyboardButton("Nᴇxᴛ ⤷", callback_data=f"next_{req}_{key}_{offset}")
         ])
 
-    cap_func = random.choice(CAPTIONS)
-    caption = cap_func(msg.from_user.mention if msg.from_user else "Sir", search.replace(" ", "_"))
-
-    result_msg = await msg.reply_text(caption, reply_markup=InlineKeyboardMarkup(btn))
+    cap = f"<b>✨ ʜᴇʏ {msg.from_user.mention}\n📁 ʏᴏᴜʀ {search} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🚀</b>"
+    result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     asyncio.create_task(auto_delete(msg, result_msg))
 
-
-    
 @Client.on_callback_query(filters.regex(r"^spolling"))
 async def advantage_spoll_choker(bot, query):
     _, user, movie_ = query.data.split('#')
