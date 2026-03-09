@@ -26,7 +26,7 @@ from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from info import *
 from Script import script
 from utils import *
-from database.users_chats_db import db
+from database.users_chats_db import *
 from database.ia_filterdb import (
     save_file,
     Media, Media2, Media3, Media4, Media5,
