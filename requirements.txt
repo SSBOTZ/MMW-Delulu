@@ -1,6 +1,5 @@
 pyrofork==2.3.45
 tgcrypto
-pyrotgfork
 pymongo[srv]==3.12.3
 motor==2.5.1
 marshmallow==3.20.1
@@ -55,8 +54,6 @@ youtube-dl
 youtube-search
 youtube-search-python>=1.4.6
 ytthumb
-openai>=0.25.0
 wheel
-
 git+https://github.com/Joelkb/cinemagoer #cinemagoer
 git+https://github.com/agronholm/anyio
