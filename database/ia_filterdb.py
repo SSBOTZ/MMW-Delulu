@@ -4,13 +4,11 @@ import re
 import base64
 from struct import pack
 from typing import Optional
-
 from pyrogram.file_id import FileId
 from pymongo.errors import DuplicateKeyError
 from motor.motor_asyncio import AsyncIOMotorClient
 from umongo import Instance, Document, fields
 from marshmallow.exceptions import ValidationError
-
 from info import *
 from sample_info import tempDict
 
@@ -247,7 +245,7 @@ async def get_bad_files(query, file_type=None, filter=False):
 
     cursor_media5 = Media5.find(filter)
     cursor_media5.sort('$natural', -1)
-    files_media5 = await cursor_media5.to_list(length=total_results_media4)
+    files_media5 = await cursor_media5.to_list(length=total_results_media5)
     
     return files_media1, files_media2, files_media3, files_media4, files_media5, total_results
     
