@@ -1,3 +1,4 @@
+from Script import script
 import asyncio
 from pyrogram import Client, filters
 from database.users_chats_db import db
