@@ -11,11 +11,9 @@ import logging
 import datetime
 from os import environ, execle, system
 from typing import List, Tuple
-
 import psutil
 import pytz
 import pymongo
-
 from pyrogram import Client, filters, enums
 from pyrogram.types import (
     Message,
@@ -25,11 +23,9 @@ from pyrogram.types import (
 )
 from pyrogram.errors import ChatAdminRequired, PeerIdInvalid, FloodWait
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
-
 from info import *
 from Script import script
 from utils import *
-
 from database.users_chats_db import db
 from database.ia_filterdb import (
     save_file,
@@ -40,7 +36,7 @@ from database.ia_filterdb import (
     db4 as clientDB4,
     db5 as clientDB5
 )
-
+from database.ia_filterdb import*
 from database.connections_mdb import active_connection
 from plugins.fsub import ForceSub
 
