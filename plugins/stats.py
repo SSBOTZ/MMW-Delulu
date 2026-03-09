@@ -2,7 +2,6 @@ from Script import script
 import asyncio
 from pyrogram import Client, filters
 from database.users_chats_db import db
-import script
 from info import ADMINS
 from database.ia_filterdb import (
     save_file,
