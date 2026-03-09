@@ -45,8 +45,7 @@ async def get_stats(bot, message):
 
     def calc(stat):
         used = (stat["dataSize"] + stat["indexSize"]) / (1024 * 1024)
-        storage = stat["storageSize"] / (1024 * 1024)
-        free = max(storage - used, 0)   # prevents negative values
+        free = 512 - used # prevents negative values
         return f"{used:.2f}", f"{free:.2f}"
 
     used1, free1 = calc(s1)
