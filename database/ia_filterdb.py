@@ -10,6 +10,8 @@ from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
 from info import *
+from umongo import Document
+from umongo.fields import StrField
 from sample_info import tempDict
 
 logger = logging.getLogger(__name__)
@@ -43,7 +45,7 @@ class Media(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
+    caption = StrField(allow_none=True) 
 
     class Meta:
         collection_name = COLLECTION_NAME
@@ -57,7 +59,7 @@ class Media2(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
+    caption = StrField(allow_none=True) 
 
     class Meta:
         collection_name = COLLECTION_NAME
@@ -71,8 +73,8 @@ class Media3(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
-
+    caption = StrField(allow_none=True) 
+    
     class Meta:
         collection_name = COLLECTION_NAME
         indexes = ["$file_name"]
@@ -85,8 +87,8 @@ class Media4(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
-
+    caption = StrField(allow_none=True) 
+    
     class Meta:
         collection_name = COLLECTION_NAME
         indexes = ["$file_name"]
@@ -99,8 +101,8 @@ class Media5(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
-
+    caption = StrField(allow_none=True) 
+    
     class Meta:
         collection_name = COLLECTION_NAME
         indexes = ["$file_name"]
