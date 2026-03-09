@@ -11,7 +11,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
 from info import *
 from umongo import Document
-from umongo.fields import StrField
 from sample_info import tempDict
 
 logger = logging.getLogger(__name__)
@@ -45,12 +44,13 @@ class Media(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = StrField(allow_none=True) 
+    caption = fields.StrField(allow_none=True) 
 
     class Meta:
         collection_name = COLLECTION_NAME
         indexes = ["$file_name"]
-
+        strict = False
+        
 @instance2.register
 class Media2(Document):
     file_id = fields.StrField(attribute="_id")
@@ -59,11 +59,12 @@ class Media2(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = StrField(allow_none=True) 
+    caption = fields.StrField(allow_none=True) 
 
     class Meta:
         collection_name = COLLECTION_NAME
         indexes = ["$file_name"]
+        strict = False
 
 @instance3.register
 class Media3(Document):
@@ -73,11 +74,12 @@ class Media3(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = StrField(allow_none=True) 
+    caption = fields.StrField(allow_none=True) 
     
     class Meta:
         collection_name = COLLECTION_NAME
         indexes = ["$file_name"]
+        strict = False
 
 @instance4.register
 class Media4(Document):
@@ -87,11 +89,12 @@ class Media4(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = StrField(allow_none=True) 
+    caption = fields.StrField(allow_none=True) 
     
     class Meta:
         collection_name = COLLECTION_NAME
         indexes = ["$file_name"]
+        strict = False
 
 @instance5.register
 class Media5(Document):
@@ -101,12 +104,13 @@ class Media5(Document):
     file_size = fields.IntField(required=True)
     file_type = fields.StrField(allow_none=True)
     mime_type = fields.StrField(allow_none=True)
-    caption = StrField(allow_none=True) 
+    caption = fields.StrField(allow_none=True) 
     
     class Meta:
         collection_name = COLLECTION_NAME
         indexes = ["$file_name"]
-
+        strict = False
+        
 ALL_MEDIA = [Media, Media2, Media3, Media4, Media5]
 saveMedia: Optional[Document] = None
 
