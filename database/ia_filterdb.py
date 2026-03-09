@@ -21,7 +21,7 @@ client = AsyncIOMotorClient(DATABASE_URI)
 db = client[DATABASE_NAME]
 instance = Instance.from_db(db)
 
-client2 = AsyncIOMotorClient(DATABASE_URI2)
+client2 = AsyncIOMotorClient(SECONDDB_URI)
 db2 = client2[DATABASE_NAME]
 instance2 = Instance.from_db(db2)
 
