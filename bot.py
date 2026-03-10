@@ -26,83 +26,93 @@ from utils import *
 from sample_info import tempDict
 from info import *
 
-# Logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
     datefmt="%d-%m-%Y %H:%M:%S"
 )
 
-logger = logging.getLogger("AUTO_FILTER_BOT-MMW-Delulu")
+logger = logging.getLogger("AUTO_FILTER_BOT")
 
-# Load ENV
 load_dotenv("./dynamic.env", override=True, encoding="utf-8")
 
 name = "main"
 
 DB_OPTIONS = [
-    (clientDB, DATABASE_URI, "🌐 Primary DB"),
-    (clientDB2, SECONDDB_URI, "🥈 Second DB"),
-    (clientDB3, DATABASE_URI3, "🧩 Third DB"),
-    (clientDB4, DATABASE_URI4, "📁 Fourth DB"),
-    (clientDB5, DATABASE_URI5, "💾 Fifth DB"),
+    (clientDB, DATABASE_URI, "🌐 Primary Database"),
+    (clientDB2, DATABASE_URI2, "🥈 Second Database"),
+    (clientDB3, DATABASE_URI3, "🧩 Third Database"),
+    (clientDB4, DATABASE_URI4, "📁 Fourth Database"),
+    (clientDB5, DATABASE_URI5, "💾 Fifth Database"),
 ]
 
 pyroutils.MIN_CHAT_ID = -999999999999
 pyroutils.MIN_CHANNEL_ID = -100999999999999
 
-RESTART_INTERVAL = 24 * 60 * 60
+RESTART_INTERVAL = 86400
 DB_SIZE_LIMIT_MB = 160
 MAX_DB_CAPACITY_MB = 512
-KEEP_ALIVE_URL = "https://moderate-paulie-mmwgoku-46260985.koyeb.app/" #koyeb & render service url
+KEEP_ALIVE_URL = "https://moderate-paulie-mmwgoku-46260985.koyeb.app/"
 ALIVE_INTERVAL = 12
 
+
 async def alive():
+
     if not KEEP_ALIVE_URL:
         return
 
     timeout = aiohttp.ClientTimeout(total=8)
 
-    while True:
-        try:
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.get(KEEP_ALIVE_URL):
-                    logger.info("💓 Keep-alive ping successful")
-        except Exception as e:
-            logger.warning(f"⚠️ Keep-alive failed: {e}")
+    async with aiohttp.ClientSession(timeout=timeout) as session:
 
-        await asyncio.sleep(ALIVE_INTERVAL)
-        
+        while True:
+            try:
+                async with session.get(KEEP_ALIVE_URL):
+                    logger.info("💓 Keep Alive Ping Success")
+            except Exception as e:
+                logger.warning(f"⚠️ Keep Alive Failed → {e}")
+
+            await asyncio.sleep(ALIVE_INTERVAL)
 
 
 async def check_db_space(db_client):
+
     try:
+
         stats = await db_client.command("dbStats")
+
         used_mb = (stats["dataSize"] + stats["indexSize"]) / (1024 ** 2)
+
         free_mb = round(MAX_DB_CAPACITY_MB - used_mb, 2)
 
-        logger.info(f"💾 DB Usage: {round(used_mb,2)} MB | Free: {free_mb} MB")
+        logger.info(f"💾 Database Usage → {round(used_mb,2)} MB | Free → {free_mb} MB")
+
         return free_mb
 
     except Exception as e:
-        logger.error(f"❌ DB check failed: {e}")
+
+        logger.error(f"❌ Database Check Failed → {e}")
+
         return 0
 
 
 async def restart_index(bot):
 
-    progress_document = incol.find_one({"_id": "index_progress"})
+    progress_document = await incol.find_one({"_id": "index_progress"})
 
     if progress_document:
+
         last_indexed_file = progress_document.get("last_indexed_file", 0)
+
         last_msg_id = progress_document.get("last_msg_id")
+
         chat_id = progress_document.get("chat_id")
 
         temp.CURRENT = int(last_indexed_file)
 
         msg = await bot.send_message(
             chat_id=int(LOG_CHANNEL),
-            text="♻️ Delulu's 𝙄𝙣𝙙𝙚𝙭 𝙍𝙚𝙨𝙩𝙖𝙧𝙩𝙞𝙣𝙜..."
+            text="♻ 𝘿𝙚𝙡𝙪𝙡𝙪'𝙨 𝙄𝙣𝙙𝙚𝙭 𝙍𝙚𝙨𝙩𝙖𝙧𝙩𝙞𝙣𝙜... ♻️"
         )
 
         await index_files_to_db(last_msg_id, chat_id, msg, bot)
@@ -121,24 +131,29 @@ class Bot(Client):
             plugins={"root": "plugins"},
             sleep_threshold=30,
         )
+
     async def restart_loop(self):
 
         while True:
 
             await asyncio.sleep(RESTART_INTERVAL)
 
-            logger.warning("♻️ Delulu Restarting after 1 day")
+            logger.warning("♻️ MMW-Delulu Bot restarted successfully after 1 day.")
 
             os.execl(sys.executable, sys.executable, *sys.argv)
-            
 
     async def start(self):
 
+        logger.info("🚀 Bot Starting")
+
         b_users, b_chats = await db.get_banned()
+
         temp.BANNED_USERS = b_users
         temp.BANNED_CHATS = b_chats
 
         await super().start()
+
+        logger.info("✅ MMW-Delulu Started")
 
         if REQ_CHANNEL is None:
 
@@ -154,6 +169,7 @@ class Bot(Client):
                 f.write(f"REQ_CHANNEL={req}\n")
 
             os.execl(sys.executable, sys.executable, "bot.py")
+
             return
 
         me = await self.get_me()
@@ -164,13 +180,19 @@ class Bot(Client):
 
         self.username = "@" + me.username
 
+        logger.info(f"🤖 Bot Online → {me.first_name} | @{me.username}")
+
         for media_cls in (Media, Media2, Media3, Media4, Media5):
 
             try:
+
                 await media_cls.ensure_indexes()
-                logger.info(f"📑 Index ensured {media_cls.__name__}")
-            except Exception:
-                pass
+
+                logger.info(f"📑 Index Ready → {media_cls.__name__}")
+
+            except Exception as e:
+
+                logger.warning(f"⚠️ Index Failed → {media_cls.__name__} | {e}")
 
         selected = False
 
@@ -179,39 +201,55 @@ class Bot(Client):
             if not uri:
                 continue
 
-            logger.info(f"🔎 Checking {label}")
+            logger.info(f"🔍 Checking {label}")
 
             free = await check_db_space(db_client)
 
             if free > DB_SIZE_LIMIT_MB:
 
                 tempDict["indexDB"] = uri
-                logger.info(f"✅ Using {label}")
+
+                logger.info(f"✅ Selected {label}")
 
                 selected = True
+
                 break
 
         if not selected:
-            logger.error("❌ No Database Available For Active Delulu")
+
+            logger.error("❌ No Available Database Capacity")
+
             raise SystemExit(1)
 
         await choose_mediaDB()
 
         await self.send_message(
             chat_id=LOG_CHANNEL,
-            text="Delulu 𝙍𝙚𝙨𝙩𝙖𝙧𝙩𝙚𝙙 ❤️‍🩹"
+            text="❤️‍🔥 MMW-Delulu Restarted Successfully"
         )
 
-        app = web.AppRunner(await bot_run())
-        await app.setup()
+        web_app = await bot_run()
 
-        await web.TCPSite(app, "0.0.0.0", 8080).start()
+        runner = web.AppRunner(web_app)
+
+        await runner.setup()
+
+        await web.TCPSite(runner, "0.0.0.0", 8080).start()
+
+        logger.info("🌐 Web Server Running on Port 8080")
 
         asyncio.create_task(self.restart_loop())
+
         asyncio.create_task(alive())
+
         await restart_index(self)
 
+        logger.info("🎯 Bot Fully Operational")
+
     async def stop(self, *args):
+
+        logger.info("🛑 Bot Stopping")
+
         await super().stop()
 
     async def iter_messages(
@@ -230,13 +268,27 @@ class Bot(Client):
             if new_diff <= 0:
                 return
 
-            messages = await self.get_messages(
-                chat_id,
-                list(range(current, current + new_diff + 1))
-            )
+            try:
+
+                messages = await self.get_messages(
+                    chat_id,
+                    list(range(current, current + new_diff + 1))
+                )
+
+            except FloodWait as e:
+
+                logger.warning(f"⏳ FloodWait {e.value}s")
+
+                await asyncio.sleep(e.value)
+
+                continue
 
             for message in messages:
-                yield message
+
+                if message:
+
+                    yield message
+
                 current += 1
 
 
