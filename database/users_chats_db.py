@@ -8,8 +8,7 @@ class Database:
         self.db = self._client[database_name]
         self.col = self.db.users
         self.grp = self.db.groups
-
-
+        
     def new_user(self, id, name):
         return dict(
             id = id,
@@ -48,6 +47,7 @@ class Database:
             is_banned=False,
             ban_reason=''
         )
+        user = await self.col.find_one({'id': int(id)})
         await self.col.update_one({'id': id}, {'$set': {'ban_status': ban_status}})
     
     async def ban_user(self, user_id, ban_reason="No Reason"):
@@ -55,6 +55,7 @@ class Database:
             is_banned=True,
             ban_reason=ban_reason
         )
+        user = await self.col.find_one({'id': int(user_id)})
         await self.col.update_one({'id': user_id}, {'$set': {'ban_status': ban_status}})
 
     async def get_ban_status(self, id):
@@ -68,10 +69,12 @@ class Database:
         return user.get('ban_status', default)
 
     async def get_all_users(self):
-        return self.col.find({})
+        users_list = (await (self.col.find({})).to_list(length=None))
+        return users_list
     
 
     async def delete_user(self, user_id):
+        user = await self.col.find_one({'id': int(user_id)})
         await self.col.delete_many({'id': int(user_id)})
 
 
@@ -99,9 +102,11 @@ class Database:
             is_disabled=False,
             reason="",
             )
+        chat = await self.grp.find_one({'id':int(id)})
         await self.grp.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
         
     async def update_settings(self, id, settings):
+        chat = await self.grp.find_one({'id':int(id)})
         await self.grp.update_one({'id': int(id)}, {'$set': {'settings': settings}})
         
     
@@ -126,20 +131,19 @@ class Database:
             is_disabled=True,
             reason=reason,
             )
+        chat = await self.grp.find_one({'id':int(chat)})
         await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
     
 
     async def total_chat_count(self):
-        count = await self.grp.count_documents({})
+        count = (await self.grp.count_documents({}))
         return count
     
 
     async def get_all_chats(self):
-        return self.grp.find({})
-
-
+        return ((await (self.grp.find({})).to_list(length=None)))
+    
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
-
 
 db = Database(DATABASE_NAME)
