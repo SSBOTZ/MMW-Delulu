@@ -1,4 +1,3 @@
-import logging
 import asyncio
 import re
 import base64
@@ -12,14 +11,11 @@ from marshmallow.exceptions import ValidationError
 from info import *
 from sample_info import tempDict
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
-logger = logging.getLogger("MediaDB")
-
 client = AsyncIOMotorClient(DATABASE_URI)
 db = client[DATABASE_NAME]
 instance = Instance.from_db(db)
 
-client2 = AsyncIOMotorClient(SECONDDB_URI)
+client2 = AsyncIOMotorClient(DATABASE_URI2)
 db2 = client2[DATABASE_NAME]
 instance2 = Instance.from_db(db2)
 
@@ -36,7 +32,6 @@ db5 = client5[DATABASE_NAME]
 instance5 = Instance.from_db(db5)
 
 def create_media_model(instance):
-
     @instance.register
     class Media(Document):
         file_id = fields.StrField(attribute="_id")
@@ -77,7 +72,6 @@ async def choose_mediaDB():
 
     uri = tempDict.get("indexDB")
     saveMedia = db_map.get(uri, Media)
-    logger.info(f"📦 Saving files to DB → {saveMedia.__name__}")
 
 async def check_file(media):
     file_id, file_ref = unpack_new_file_id(media.file_id)
@@ -90,7 +84,6 @@ async def check_file(media):
     results = await asyncio.gather(*tasks)
 
     if any(results):
-        logger.info("⚠️ Duplicate file detected")
         return None
 
     return "okda"
@@ -126,19 +119,12 @@ async def save_file(media):
         )
 
         await file.commit()
-
-        logger.info(f"✅ Saved → {file_name}")
-
         return True
 
     except DuplicateKeyError:
-
-        logger.warning(f"⚠️ Duplicate → {file_name}")
         return False
 
-    except ValidationError as e:
-
-        logger.error(f"❌ Validation error → {e}")
+    except ValidationError:
         return False
 
 async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
@@ -154,8 +140,7 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
 
     try:
         regex = re.compile(raw_pattern, re.IGNORECASE)
-    except Exception:
-        logger.error("❌ Regex compilation failed")
+    except:
         return [], "", 0
 
     search_filter = {"file_name": regex}
@@ -191,64 +176,68 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
     if next_offset >= total:
         next_offset = ""
 
-    logger.info(f"🔎 Search '{query}' → {total} results")
-
     return merged, next_offset, total
 
 
 async def get_bad_files(query, file_type=None, filter=False):
-    """For given query return (results, next_offset)"""
+
     query = query.strip()
 
     if not query:
-        raw_pattern = '.'
-    elif ' ' not in query:
-        raw_pattern = r'(\b|[\.\+\-_])' + query + r'(\b|[\.\+\-_])'
+        raw_pattern = "."
+    elif " " not in query:
+        raw_pattern = r"(\b|[\.\+\-_])" + query + r"(\b|[\.\+\-_])"
     else:
-        raw_pattern = query.replace(' ', r'.*[\s\.\+\-_]')
+        raw_pattern = query.replace(" ", r".*[\s\.\+\-_]")
 
     try:
         regex = re.compile(raw_pattern, flags=re.IGNORECASE)
     except:
         return []
 
-    if USE_CAPTION_FILTER:
-        filter = {'file_name': regex}
-    else:
-        filter = {'file_name': regex}
+    filter = {"file_name": regex}
 
     if file_type:
-        filter['file_type'] = file_type
+        filter["file_type"] = file_type
 
     total_results_media1 = await Media.count_documents(filter)
     total_results_media2 = await Media2.count_documents(filter)
     total_results_media3 = await Media3.count_documents(filter)
     total_results_media4 = await Media4.count_documents(filter)
     total_results_media5 = await Media5.count_documents(filter)
-    total_results = total_results_media1 + total_results_media2 + total_results_media3 + total_results_media4 + total_results_media5
 
-    cursor_media1 = Media.find(filter)
-    cursor_media1.sort('$natural', -1)
+    total_results = (
+        total_results_media1
+        + total_results_media2
+        + total_results_media3
+        + total_results_media4
+        + total_results_media5
+    )
+
+    cursor_media1 = Media.find(filter).sort("$natural", -1)
     files_media1 = await cursor_media1.to_list(length=total_results_media1)
 
-    cursor_media2 = Media2.find(filter)
-    cursor_media2.sort('$natural', -1)
+    cursor_media2 = Media2.find(filter).sort("$natural", -1)
     files_media2 = await cursor_media2.to_list(length=total_results_media2)
 
-    cursor_media3 = Media3.find(filter)
-    cursor_media3.sort('$natural', -1)
+    cursor_media3 = Media3.find(filter).sort("$natural", -1)
     files_media3 = await cursor_media3.to_list(length=total_results_media3)
 
-    cursor_media4 = Media4.find(filter)
-    cursor_media4.sort('$natural', -1)
+    cursor_media4 = Media4.find(filter).sort("$natural", -1)
     files_media4 = await cursor_media4.to_list(length=total_results_media4)
 
-    cursor_media5 = Media5.find(filter)
-    cursor_media5.sort('$natural', -1)
+    cursor_media5 = Media5.find(filter).sort("$natural", -1)
     files_media5 = await cursor_media5.to_list(length=total_results_media5)
-    
-    return files_media1, files_media2, files_media3, files_media4, files_media5, total_results
-    
+
+    return (
+        files_media1,
+        files_media2,
+        files_media3,
+        files_media4,
+        files_media5,
+        total_results,
+    )
+
 
 async def delete_files_below_threshold(threshold_size_mb=40, batch_size=20):
 
@@ -267,22 +256,12 @@ async def delete_files_below_threshold(threshold_size_mb=40, batch_size=20):
                 await model.collection.delete_one(
                     {"_id": doc["file_id"]}
                 )
-
                 deleted += 1
-
-                logger.info(
-                    f"🗑 Deleted → {doc['file_name']}"
-                )
-
-            except Exception as e:
-
-                logger.error(
-                    f"❌ Delete failed → {e}"
-                )
-
-    logger.info(f"🔥 Total deleted → {deleted}")
+            except:
+                pass
 
     return deleted
+
 
 async def get_file_details(file_id):
 
@@ -294,6 +273,7 @@ async def get_file_details(file_id):
             return result
 
     return None
+
 
 def encode_file_id(s: bytes):
 
@@ -313,9 +293,11 @@ def encode_file_id(s: bytes):
 
     return base64.urlsafe_b64encode(r).decode().rstrip("=")
 
+
 def encode_file_ref(file_ref: bytes):
 
     return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
+
 
 def unpack_new_file_id(new_file_id):
 
@@ -334,6 +316,7 @@ def unpack_new_file_id(new_file_id):
     file_ref = encode_file_ref(decoded.file_reference)
 
     return file_id, file_ref
+
 
 def get_readable_time(seconds):
 
@@ -355,3 +338,4 @@ def get_readable_time(seconds):
     result += f"{int(seconds)}s"
 
     return result
+
