@@ -373,7 +373,7 @@ async def restart_bot(client, message):
     msg = await message.reply_text(
         text="<b>Bot Restarting ...</b>"
     )        
-    await msg.edit("<b>Restart Successfully Completed ✅</b>")
+    await msg.edit("<b>♻ 𝘿𝙚𝙡𝙪𝙡𝙪'𝙨 𝙍𝙚𝙨𝙩𝙖𝙧𝙩𝙞𝙣𝙜...✅</b>")
     system("git pull -f && pip3 install --no-cache-dir -r requirements.txt")
     execle(sys.executable, sys.executable, "bot.py", environ)
     
