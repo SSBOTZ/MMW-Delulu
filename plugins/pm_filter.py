@@ -475,7 +475,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             "<blockquote>⚠️ 𝗙𝗶𝗹𝗲 𝘄𝗶𝗹𝗹 𝗯𝗲 𝗗𝗲𝗹𝗲𝘁𝗲𝗱 𝗶𝗻 5 𝗠𝗶𝗻𝘂𝘁𝗲𝘀.</blockquote>\n\n"
             "𝗜𝗳 𝘆𝗼𝘂 𝘄𝗮𝗻𝘁 𝘁𝗼 𝗱𝗼𝘄𝗻𝗹𝗼𝗮𝗱 𝘁𝗵𝗶𝘀 𝗳𝗶𝗹𝗲, 𝗙𝗼𝗿𝘄𝗮𝗿𝗱 𝗶𝘁 𝘁𝗼 𝗮𝗻𝘆 𝗰𝗵𝗮𝘁 𝗼𝗿 𝘀𝗮𝘃𝗲𝗱 𝗺𝗲𝘀𝘀𝗮𝗴𝗲𝘀.</b>"
         )
-        await message.delete()
         await asyncio.sleep(300)  # 5 minutes
         await ok.delete()
         await da.delete()
