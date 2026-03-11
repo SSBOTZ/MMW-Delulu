@@ -93,7 +93,8 @@ async def deletechannelmedia(bot, message):
 
                 file_id, _ = unpack_new_file_id(media.file_id)
 
-                deleted = await delete_file(file_id)
+                #deleted = await delete_file(file_id)
+                asyncio.create_task(delete_file(file_id))
 
                 if deleted:
                     total_files += 1
