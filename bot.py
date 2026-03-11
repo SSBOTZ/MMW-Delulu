@@ -37,7 +37,7 @@ logger = logging.getLogger("𝘿𝙚𝙡𝙪𝙡𝙪")
 load_dotenv("./dynamic.env", override=True, encoding="utf-8")
 
 DB_OPTIONS = [
-    (clientDB, DATABASE_URI,  "🌍✨ 𝙋𝙧𝙞𝙢𝙖𝙧𝙮 𝘿𝙖𝙩𝙖𝙗𝙖𝙨𝙚"),
+    (clientDB, DATABASE_URI,  "🌍✨ 𝙋𝙧𝙞𝙢𝙖𝙧𝙮 𝘿𝘽"),
     (clientDB2, DATABASE_URI2, "🥈⚡ 𝙎𝙚𝙘𝙤𝙣𝙙 𝘿𝘽"),
     (clientDB3, DATABASE_URI3, "🧩📊 𝙏𝙝𝙞𝙧𝙙 𝘿𝘽"),
     (clientDB4, DATABASE_URI4, "📁🔐 𝙁𝙤𝙪𝙧𝙩𝙝 𝘿𝘽"),
@@ -183,8 +183,8 @@ class Bot(Client):
             try:
                 await media_cls.ensure_indexes()
                 logger.info(f"📑 Index Ready → {media_cls.__name__}")
-            except:
-                pass
+            except Exception as e:
+                logger.error(f"❌ Index Failed → {media_cls.__name__} | {e}")
         selected = False
 
         for db_client, uri, label in DB_OPTIONS:
