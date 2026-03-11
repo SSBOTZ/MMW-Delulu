@@ -28,11 +28,11 @@ from info import *
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    format="✨ %(asctime)s | %(levelname)s | 𝘿𝙚𝙡𝙪𝙡𝙪 | %(message)s 🚀",
     datefmt="%d-%m-%Y %H:%M:%S"
 )
 
-logger = logging.getLogger("AUTO_FILTER_BOT")
+logger = logging.getLogger("𝘿𝙚𝙡𝙪𝙡𝙪")
 
 load_dotenv("./dynamic.env", override=True, encoding="utf-8")
 
