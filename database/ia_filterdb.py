@@ -6,6 +6,7 @@ from typing import Optional
 from pyrogram.file_id import FileId
 from pymongo.errors import DuplicateKeyError
 from motor.motor_asyncio import AsyncIOMotorClient
+from typing import List, Tuple, Optional, Dict, Any, Union
 from umongo import Instance, Document, fields
 from marshmallow.exceptions import ValidationError
 from info import *
