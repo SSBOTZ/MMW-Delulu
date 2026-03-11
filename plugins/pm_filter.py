@@ -26,22 +26,6 @@ lock = asyncio.Lock()
 
 BUTTONS = {}
 SPELL_CHECK = {}
-SEASON = {}
-
-# Choose Option Settings 
-LANGUAGES = ["malayalam", "mal", "tamil", "tam" ,"english", "eng", "hindi", "hin", "telugu", "tel", "kannada", "kan"]
-SEASONS = ["season 1", "season 2", "season 3", "season 4", "season 5", "season 6", "season 7", "season 8", "season 9", "season 10"]
-EPISODES = ["E 01", "E 02", "E 03", "E 04", "E 05", "E 06", "E 07", "E 08", "E 09", "E 10", "E 11", "E 12", "E 13", "E 14", "E 15", "E 16", "E 17", "E 18", "E 19", "E 20", "E 21", "E 22", "E 23", "E 24", "E 25", "E 26", "E 27", "E 28", "E 29", "E 30", "E 31", "E 32", "E 33", "E 34", "E 35", "E 36", "E 37", "E 38", "E 39", "E 40"]
-QUALITIES = ["360p", "480p", "720p", "1080p", "1440p", "2160p"]
-YEARS = ["1900", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"]
-
-NON_IMG = """<b>‼️ FILE NOT FOUND ? ‼️
-
-1️⃣ സിനിമയുടെ സ്പെല്ലിങ്ങ് ഗൂഗിളിൽ ഉള്ളത് പോലെ ആണോ നിങ്ങൾ അടിച്ചത് എന്ന് ഉറപ്പ് വരുത്തുക..!!
-
-2️⃣ നിങ്ങൾ ചോദിച്ച സിനിമ OTT റിലീസ് ആയതാണോ എന്ന് <a href=https://t.me/mallumovieworldmain2> MMW BOTZ 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 </a> യിൽ ചെക്ക് ചെയ്യുക..!!
-
-3️⃣ മൂവിക്ക് വേണ്ടി മെസ്സേജ് അയക്കുമ്പോൾ മൂവിയുടെ പേര് ഇറങ്ങിയ വർഷം മാത്രം അയക്കുക..!!</b>"""
 
 async def auto_delete(original_msg: Message, reply_msg: Message):
     try:
@@ -430,7 +414,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         files_ = await get_file_details(file_id)
         if not files_:
             return await query.answer('No such file exist.')
-        files = files_[0]
+        #files = files_[0]
+        files = files_[0] if isinstance(files_, list) else files_
         title = files.file_name        
         size = get_size(files.file_size)   
         f_caption = files.file_name
@@ -467,7 +452,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         files_ = await get_file_details(file_id)
         if not files_:
             return await query.answer('No such file exist.')
-        files = files_[0]
+        #files = files_[0]
+        files = files_[0] if isinstance(files_, list) else files_
         title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.file_name
