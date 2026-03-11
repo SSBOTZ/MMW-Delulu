@@ -20,7 +20,6 @@ from info import *
 from Script import script
 from utils import *
 from database.users_chats_db import db
-from database.ia_filterdb import *
 
 logger = logging.getLogger(__name__)
         
