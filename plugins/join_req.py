@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# (c) @AlbertEinsteinTG
-
 from logging import getLogger
 from pyrogram import Client, filters, enums
 from pyrogram.types import ChatJoinRequest, Message
