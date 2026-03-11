@@ -36,8 +36,6 @@ logger = logging.getLogger("AUTO_FILTER_BOT")
 
 load_dotenv("./dynamic.env", override=True, encoding="utf-8")
 
-name = "main"
-
 DB_OPTIONS = [
     (clientDB, DATABASE_URI,  "🌍✨ 𝙋𝙧𝙞𝙢𝙖𝙧𝙮 𝘿𝙖𝙩𝙖𝙗𝙖𝙨𝙚"),
     (clientDB2, DATABASE_URI2, "🥈⚡ 𝙎𝙚𝙘𝙤𝙣𝙙 𝘿𝘽"),
@@ -185,9 +183,8 @@ class Bot(Client):
             try:
                 await media_cls.ensure_indexes()
                 logger.info(f"📑 Index Ready → {media_cls.__name__}")
-            except Exception as e:
-                logger.warning(f"⚠️ Index Failed → {media_cls.__name__} | {e}")
-        
+            except:
+                pass
         selected = False
 
         for db_client, uri, label in DB_OPTIONS:
