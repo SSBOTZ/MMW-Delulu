@@ -4,15 +4,14 @@ import asyncio
 import logging
 from pyrogram import Client, filters
 from database.users_chats_db import db
-from info import *
-from utils import *
+from info import ADMINS
+from utils import broadcast_messages
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - [BROADCAST] - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
-
 
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
 async def user_broadcast(bot, message):
@@ -135,7 +134,7 @@ async def grp_broadcast(bot, message):
         tasks = []
         for user in batch:
             user_id = int(user["id"])
-            tasks.append(gbroadcast_messages(user_id, b_msg))
+            tasks.append(broadcast_messages(user_id, b_msg))
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
