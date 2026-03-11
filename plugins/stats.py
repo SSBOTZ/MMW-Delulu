@@ -28,11 +28,11 @@ async def get_stats(bot, message):
     users = await db.total_users_count()
     chats = await db.total_chat_count()
 
-    tot1 = await Media.count_documents()
-    tot2 = await Media2.count_documents()
-    tot3 = await Media3.count_documents()
-    tot4 = await Media4.count_documents()
-    tot5 = await Media5.count_documents()
+    tot1 = await Media.count_documents({})
+    tot2 = await Media2.count_documents({})
+    tot3 = await Media3.count_documents({})
+    tot4 = await Media4.count_documents({})
+    tot5 = await Media5.count_documents({})
 
     total_files = tot1 + tot2 + tot3 + tot4 + tot5
 
@@ -44,7 +44,7 @@ async def get_stats(bot, message):
 
     def calc(stat):
         used = (stat["dataSize"] + stat["indexSize"]) / (1024 * 1024)
-        free = 512 - used # prevents negative values
+        free = 512 - used
         return f"{used:.2f}", f"{free:.2f}"
 
     used1, free1 = calc(s1)
