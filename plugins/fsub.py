@@ -3,13 +3,12 @@ from pyrogram import Client, enums
 from pyrogram.errors import FloodWait, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from database.join_reqs import JoinReqs
-from info import REQ_CHANNEL, AUTH_CHANNEL, JOIN_REQS_DB, ADMINS
+from info import *
 from logging import getLogger
 
 logger = getLogger(__name__)
 INVITE_LINK = None
 db = JoinReqs
-
 
 async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="checksub"):
 
@@ -26,11 +25,6 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
         update.message.from_user = update.from_user
         update = update.message
         is_cb = True
-
-        try:
-            await update.delete()
-        except:
-            pass
 
     try:
         if INVITE_LINK is None:
@@ -61,14 +55,6 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
         try:
             user = await db().get_user(update.from_user.id)
             if user and user["user_id"] == update.from_user.id:
-                if file_id:
-                    try:
-                        await bot.send_cached_media(
-                            chat_id=update.from_user.id,
-                            file_id=file_id
-                        )
-                    except Exception as e:
-                        logger.exception(e)
                 return True
         except Exception as e:
             logger.exception(e, exc_info=True)
@@ -82,12 +68,10 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
     try:
         if not AUTH_CHANNEL:
             raise UserNotParticipant
-
         user = await bot.get_chat_member(
-            chat_id=(int(AUTH_CHANNEL) if not REQ_CHANNEL and not db().isActive() else REQ_CHANNEL),
-            user_id=update.from_user.id
-        )
-
+                   chat_id=(int(AUTH_CHANNEL) if not REQ_CHANNEL and not db().isActive() else REQ_CHANNEL), 
+                   user_id=update.from_user.id
+               )
         if user.status == "kicked":
             await bot.send_message(
                 chat_id=update.from_user.id,
@@ -99,18 +83,9 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
             return False
 
         else:
-            if file_id:
-                try:
-                    await bot.send_cached_media(
-                        chat_id=update.from_user.id,
-                        file_id=file_id
-                    )
-                except Exception as e:
-                    logger.exception(e)
             return True
-
     except UserNotParticipant:
-        text = """**Cʟɪᴄᴋ " 📢 𝐉𝐨𝐢𝐧 𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 📢 " Tʜᴇɴ Cʟɪᴄᴋ " 🔄 𝐓𝐫𝐲 𝐀𝐠𝐚𝐢𝐧 🔄 " Bᴏᴛᴛᴏɴ Tʜᴇɴ Yᴏᴜ Wɪʟʟ Gᴇᴛ Yᴏᴜʀ Mᴏᴠɪᴇ**"""
+        text="""**Cʟɪᴄᴋ " 📢 𝐉𝐨𝐢𝐧 𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 📢 " Tʜᴇɴ Cʟɪᴄᴋ " 🔄 𝐓𝐫𝐲 𝐀𝐠𝐚𝐢𝐧 🔄 " Bᴏᴛᴛᴏɴ Tʜᴇɴ Yᴏᴜ Wɪʟʟ Gᴇᴛ Yᴏᴜʀ Mᴏᴠɪᴇ**"""
 
         buttons = [
             [
@@ -125,7 +100,7 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
             buttons.pop()
 
         if not is_cb:
-            msg = await update.reply(
+            await update.reply(
                 text=text,
                 quote=True,
                 reply_markup=InlineKeyboardMarkup(buttons),
