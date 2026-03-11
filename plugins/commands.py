@@ -30,17 +30,6 @@ media_filter = filters.document | filters.video
 
 logger = logging.getLogger(__name__)
 
-
-
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-reply_markup = InlineKeyboardMarkup(
-    [
-        [InlineKeyboardButton("Click", url="https://t.me/example")]
-    ]
-)
-
-
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):    
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
