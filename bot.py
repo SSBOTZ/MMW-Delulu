@@ -97,16 +97,16 @@ async def check_db_space(db_client):
 
 
 async def restart_index(bot):
-
-    progress_document = await incol.find_one({"_id": "index_progress"})
-
+    progress_document = incol.find_one({"_id": "index_progress"})
+    if not progress_document:
+        logger.info("✅ No previous index")
+        return
+    
     if progress_document:
-
         last_indexed_file = progress_document.get("last_indexed_file", 0)
-
         last_msg_id = progress_document.get("last_msg_id")
-
         chat_id = progress_document.get("chat_id")
+        logger.info(f"📂 Restarting Index | LastFile: {last_indexed_file}")
 
         temp.CURRENT = int(last_indexed_file)
 
@@ -116,7 +116,6 @@ async def restart_index(bot):
         )
 
         await index_files_to_db(last_msg_id, chat_id, msg, bot)
-
 
 class Bot(Client):
 
