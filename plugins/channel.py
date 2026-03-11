@@ -79,17 +79,15 @@ async def channel_info(bot: Client, message: Message):
     except Exception as e:    
         await message.reply_text(f"❌ Failed to fetch channel info!\nError: {str(e)}")    
     
-@Client.on_message(filters.command("stats") & filters.user(ADMINS))
+@Client.on_message(filters.command("stats") & filters.incoming)
 async def get_stats(bot, message):
-
     if message.from_user.id not in ADMINS:
         k = await message.reply_text("<b>🚫 ᴏɴʟʏ ᴀᴅᴍɪɴꜱ ᴄᴀɴ ᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ.</b>")
         await asyncio.sleep(10)
         await k.delete()
         await message.delete()
         return
-
-    msg = await message.reply("<b>♻️ 𝚂𝚃𝙰𝚃𝚄𝚂 𝙳𝙴𝚃𝙰𝙸𝙻𝚂... </b>")
+    msg = await message.reply("<b>♻️ 𝚂𝚃𝙰𝚃𝚄𝚂 𝙳𝙴𝚃𝙰𝙸𝙻𝚂... ♻️</b>")
 
     users = await db.total_users_count()
     chats = await db.total_chat_count()
