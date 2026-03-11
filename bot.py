@@ -39,11 +39,11 @@ load_dotenv("./dynamic.env", override=True, encoding="utf-8")
 name = "main"
 
 DB_OPTIONS = [
-    (clientDB, DATABASE_URI, "🌐 Primary Database"),
-    (clientDB2, DATABASE_URI2, "🥈 Second Database"),
-    (clientDB3, DATABASE_URI3, "🧩 Third Database"),
-    (clientDB4, DATABASE_URI4, "📁 Fourth Database"),
-    (clientDB5, DATABASE_URI5, "💾 Fifth Database"),
+    (clientDB, DATABASE_URI,  "🌍✨ 𝙋𝙧𝙞𝙢𝙖𝙧𝙮 𝘿𝙖𝙩𝙖𝙗𝙖𝙨𝙚"),
+    (clientDB2, DATABASE_URI2, "🥈⚡ 𝙎𝙚𝙘𝙤𝙣𝙙 𝘿𝘽"),
+    (clientDB3, DATABASE_URI3, "🧩📊 𝙏𝙝𝙞𝙧𝙙 𝘿𝘽"),
+    (clientDB4, DATABASE_URI4, "📁🔐 𝙁𝙤𝙪𝙧𝙩𝙝 𝘿𝘽"),
+    (clientDB5, DATABASE_URI5, "💾🚀 𝙁𝙞𝙛𝙩𝙝 𝘿𝘽"),
 ]
 
 pyroutils.MIN_CHAT_ID = -999999999999
@@ -143,7 +143,7 @@ class Bot(Client):
 
     async def start(self):
 
-        logger.info("🚀 Bot Starting")
+        logger.info("🚀 𝘿𝙚𝙡𝙪𝙡𝙪'𝙨 Starting")
 
         b_users, b_chats = await db.get_banned()
 
@@ -152,7 +152,7 @@ class Bot(Client):
 
         await super().start()
 
-        logger.info("✅ MMW-Delulu Started")
+        logger.info("✅ 𝘿𝙚𝙡𝙪𝙡𝙪'𝙨 Started")
 
         if REQ_CHANNEL is None:
 
@@ -179,20 +179,15 @@ class Bot(Client):
 
         self.username = "@" + me.username
 
-        logger.info(f"🤖 Bot Online → {me.first_name} | @{me.username}")
+        logger.info(f"🤖 𝘿𝙚𝙡𝙪𝙡𝙪'𝙨 Online → {me.first_name} | @{me.username}")
 
         for media_cls in (Media, Media2, Media3, Media4, Media5):
-
             try:
-
                 await media_cls.ensure_indexes()
-
                 logger.info(f"📑 Index Ready → {media_cls.__name__}")
-
             except Exception as e:
-
                 logger.warning(f"⚠️ Index Failed → {media_cls.__name__} | {e}")
-
+        
         selected = False
 
         for db_client, uri, label in DB_OPTIONS:
@@ -224,7 +219,7 @@ class Bot(Client):
 
         await self.send_message(
             chat_id=LOG_CHANNEL,
-            text="❤️‍🔥 MMW-Delulu Restarted Successfully"
+            text="❤️‍🔥✨ 𝘿𝙚𝙡𝙪𝙡𝙪 𝙍𝙚𝙨𝙩𝙖𝙧𝙩𝙚𝙙... ✨💫"
         )
 
         web_app = await bot_run()
@@ -243,11 +238,11 @@ class Bot(Client):
 
         await restart_index(self)
 
-        logger.info("🎯 Bot Fully Operational")
+        logger.info("🎯 𝘿𝙚𝙡𝙪𝙡𝙪 𝙍𝙚𝙨𝙩𝙖𝙧𝙩𝙚𝙙...")
 
     async def stop(self, *args):
 
-        logger.info("🛑 Bot Stopping")
+        logger.info("🛑 𝘿𝙚𝙡𝙪𝙡𝙪 Stopped")
 
         await super().stop()
 
@@ -289,6 +284,5 @@ class Bot(Client):
                     yield message
 
                 current += 1
-
 
 Bot().run()
