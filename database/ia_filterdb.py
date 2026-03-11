@@ -262,18 +262,18 @@ async def delete_files_below_threshold(threshold_size_mb=40, batch_size=20):
 
     return deleted
 
+async def get_file_details(file_id: str) -> List[Dict[str, Any]]:
+    filter_q = {'_id': file_id}
 
-async def get_file_details(file_id):
+    for idx, coll in enumerate(ALL_MEDIA, 1):
+        try:
+            doc = await coll.find_one(filter_q)
+            if doc:
+                return [doc]
+        except Exception as e:
+            continue
 
-    for model in ALL_MEDIA:
-
-        result = await model.collection.find_one({"_id": file_id})
-
-        if result:
-            return result
-
-    return None
-
+    return []
 
 def encode_file_id(s: bytes):
 
