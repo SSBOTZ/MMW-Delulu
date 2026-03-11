@@ -1,25 +1,20 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# (c) @AlbertEinsteinTG
-
 import asyncio
 from pyrogram import Client, enums
 from pyrogram.errors import FloodWait, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
-
 from database.join_reqs import JoinReqs
 from info import REQ_CHANNEL, AUTH_CHANNEL, JOIN_REQS_DB, ADMINS
-
 from logging import getLogger
 
 logger = getLogger(__name__)
 INVITE_LINK = None
 db = JoinReqs
 
+
 async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="checksub"):
 
     global INVITE_LINK
-    auth = ADMINS.copy() + [1125210189]
+    auth = ADMINS.copy()
     if update.from_user.id in auth:
         return True
 
@@ -32,9 +27,12 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
         update = update.message
         is_cb = True
 
-    # Create Invite Link if not exists
+        try:
+            await update.delete()
+        except:
+            pass
+
     try:
-        # Makes the bot a bit faster and also eliminates many issues realted to invite links.
         if INVITE_LINK is None:
             invite_link = (await bot.create_chat_invite_link(
                 chat_id=(int(AUTH_CHANNEL) if not REQ_CHANNEL and not JOIN_REQS_DB else REQ_CHANNEL),
@@ -59,12 +57,18 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
         )
         return False
 
-    # Mian Logic
     if REQ_CHANNEL and db().isActive():
         try:
-            # Check if User is Requested to Join Channel
             user = await db().get_user(update.from_user.id)
             if user and user["user_id"] == update.from_user.id:
+                if file_id:
+                    try:
+                        await bot.send_cached_media(
+                            chat_id=update.from_user.id,
+                            file_id=file_id
+                        )
+                    except Exception as e:
+                        logger.exception(e)
                 return True
         except Exception as e:
             logger.exception(e, exc_info=True)
@@ -78,11 +82,12 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
     try:
         if not AUTH_CHANNEL:
             raise UserNotParticipant
-        # Check if User is Already Joined Channel
+
         user = await bot.get_chat_member(
-                   chat_id=(int(AUTH_CHANNEL) if not REQ_CHANNEL and not db().isActive() else REQ_CHANNEL), 
-                   user_id=update.from_user.id
-               )
+            chat_id=(int(AUTH_CHANNEL) if not REQ_CHANNEL and not db().isActive() else REQ_CHANNEL),
+            user_id=update.from_user.id
+        )
+
         if user.status == "kicked":
             await bot.send_message(
                 chat_id=update.from_user.id,
@@ -94,9 +99,18 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
             return False
 
         else:
+            if file_id:
+                try:
+                    await bot.send_cached_media(
+                        chat_id=update.from_user.id,
+                        file_id=file_id
+                    )
+                except Exception as e:
+                    logger.exception(e)
             return True
+
     except UserNotParticipant:
-        text="""**Cʟɪᴄᴋ " 📢 𝐉𝐨𝐢𝐧 𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 📢 " Tʜᴇɴ Cʟɪᴄᴋ " 🔄 𝐓𝐫𝐲 𝐀𝐠𝐚𝐢𝐧 🔄 " Bᴏᴛᴛᴏɴ Tʜᴇɴ Yᴏᴜ Wɪʟʟ Gᴇᴛ Yᴏᴜʀ Mᴏᴠɪᴇ**"""
+        text = """**Cʟɪᴄᴋ " 📢 𝐉𝐨𝐢𝐧 𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 📢 " Tʜᴇɴ Cʟɪᴄᴋ " 🔄 𝐓𝐫𝐲 𝐀𝐠𝐚𝐢𝐧 🔄 " Bᴏᴛᴛᴏɴ Tʜᴇɴ Yᴏᴜ Wɪʟʟ Gᴇᴛ Yᴏᴜʀ Mᴏᴠɪᴇ**"""
 
         buttons = [
             [
@@ -111,7 +125,7 @@ async def ForceSub(bot: Client, update: Message, file_id: str = False, mode="che
             buttons.pop()
 
         if not is_cb:
-            await update.reply(
+            msg = await update.reply(
                 text=text,
                 quote=True,
                 reply_markup=InlineKeyboardMarkup(buttons),
