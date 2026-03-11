@@ -777,8 +777,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
         def calc(stat):
             used = (stat.get("dataSize", 0) + stat.get("indexSize", 0)) / (1024 * 1024)
-            storage = stat.get("storageSize", 0) / (1024 * 1024)
-            free = max(storage - used, 0)
+            free = 512 - used
             return f"{used:.2f}", f"{free:.2f}"
 
         used1, free1 = calc(s1)
@@ -839,8 +838,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
         def calc(stat):
             used = (stat.get("dataSize", 0) + stat.get("indexSize", 0)) / (1024 * 1024)
-            storage = stat.get("storageSize", 0) / (1024 * 1024)
-            free = max(storage - used, 0)
+            free = 512 - used
             return f"{used:.2f}", f"{free:.2f}"
 
         used1, free1 = calc(s1)
