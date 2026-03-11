@@ -155,7 +155,7 @@
 <summary><b>Deploy To Koyeb</b></summary>
 <br>
 
-[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=new&type=git&repository=mmwbotzmain%2FMMW-Delulu&branch=Delulu&run_command=python3+bot.py&instance_type=free&regions=fra&instances_min=0&autoscaling_sleep_idle_delay=3900&env%5BADMINS%5D=&env%5BAPI_HASH%5D=&env%5BAPI_ID%5D=&env%5BBOT_TOKEN%5D=&env%5BCOLLECTION_NAME%5D=Telegram_leo&env%5BDATABASE_NAME%5D=MMW-Delulu&env%5BDATABASE_URI%5D=&env%5BDATABASE_URI2%5D=&env%5BDATABASE_URI3%5D=&env%5BDATABASE_URI4%5D=&env%5BDATABASE_URI5%5D=&env%5BLOG_CHANNEL%5D=&env%5BPICS%5D=https%3A%2F%2Ffiles.catbox.moe%2Funmtp2.jpg&ports=8080%3Bhttp%3B%2F&hc_protocol%5B8080%5D=tcp&hc_grace_period%5B8080%5D=5&hc_interval%5B8080%5D=30&hc_restart_limit%5B8080%5D=8&hc_timeout%5B8080%5D=5&hc_path%5B8080%5D=%2F&hc_method%5B8080%5D=get)
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=mmw-delulu&type=git&repository=mmwbotzmain%2FMMW-Delulu&branch=Delulu&run_command=python3+bot.py&instance_type=free&regions=fra&instances_min=0&autoscaling_sleep_idle_delay=3900&env%5BADMINS%5D=&env%5BAPI_HASH%5D=&env%5BAPI_ID%5D=&env%5BBOT_TOKEN%5D=&env%5BCOLLECTION_NAME%5D=Telegram_leo&env%5BDATABASE_NAME%5D=MMW-Delulu&env%5BDATABASE_URI%5D=&env%5BDATABASE_URI2%5D=&env%5BDATABASE_URI3%5D=&env%5BDATABASE_URI4%5D=&env%5BDATABASE_URI5%5D=&env%5BLOG_CHANNEL%5D=&env%5BPICS%5D=https%3A%2F%2Ffiles.catbox.moe%2Funmtp2.jpg&ports=8080%3Bhttp%3B%2F&hc_protocol%5B8080%5D=tcp&hc_grace_period%5B8080%5D=5&hc_interval%5B8080%5D=30&hc_restart_limit%5B8080%5D=8&hc_timeout%5B8080%5D=5&hc_path%5B8080%5D=%2F&hc_method%5B8080%5D=get)
 
 <br><br>
 
