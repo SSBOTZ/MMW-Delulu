@@ -30,6 +30,17 @@ media_filter = filters.document | filters.video
 
 logger = logging.getLogger(__name__)
 
+
+
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+reply_markup = InlineKeyboardMarkup(
+    [
+        [InlineKeyboardButton("Click", url="https://t.me/example")]
+    ]
+)
+
+
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):    
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
@@ -140,8 +151,30 @@ async def start(client, message):
         file_id=file_id,
         caption=f_caption,
         protect_content=True if pre == 'filep' else False,
-        reply_markup=InlineKeyboardMarkup([InlineKeyboardButton('𝗠𝗼𝘃𝗶𝗲 𝗚𝗿𝗼𝘂𝗽', url=GRP_LNK)])) 
-    
+        reply_markup = InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton("𝗠𝗼𝘃𝗶𝗲 𝗚𝗿𝗼𝘂𝗽", url=GRP_LNK)]
+            ]
+        ))
+    da = await ok.reply(
+            "<b>‼️ 𝗜𝗠𝗣𝗢𝗥𝗧𝗔𝗡𝗧 ‼️\n\n"
+            "<blockquote>⚠️ 𝗙𝗶𝗹𝗲 𝘄𝗶𝗹𝗹 𝗯𝗲 𝗗𝗲𝗹𝗲𝘁𝗲𝗱 𝗶𝗻 5 𝗠𝗶𝗻𝘂𝘁𝗲𝘀.</blockquote>\n\n"
+            "𝗜𝗳 𝘆𝗼𝘂 𝘄𝗮𝗻𝘁 𝘁𝗼 𝗱𝗼𝘄𝗻𝗹𝗼𝗮𝗱 𝘁𝗵𝗶𝘀 𝗳𝗶𝗹𝗲, 𝗙𝗼𝗿𝘄𝗮𝗿𝗱 𝗶𝘁 𝘁𝗼 𝗮𝗻𝘆 𝗰𝗵𝗮𝘁 𝗼𝗿 𝘀𝗮𝘃𝗲𝗱 𝗺𝗲𝘀𝘀𝗮𝗴𝗲𝘀.</b>"
+        )
+        await message.delete()
+        await asyncio.sleep(300)  # 5 minutes
+        await ok.delete()
+        await da.delete()
+
+    btn = [[InlineKeyboardButton("✅ ɢᴇᴛ ꜰɪʟᴇ ᴀɢᴀɪɴ ✅", callback_data=f"{pre}#{file_id}")]]
+    mm = await message.reply(
+        "<b>𝗬𝗼𝘂𝗿 𝗙𝗶𝗹𝗲 𝗛𝗮𝘀 𝗕𝗲𝗲𝗻 𝗗𝗲𝗹𝗲𝘁𝗲𝗱 𝗧𝗼 𝗔𝘃𝗼𝗶𝗱 𝗕𝗢𝗧 𝗕𝗮𝗻.\n\n"
+        "𝗬𝗼𝘂 𝗰𝗮𝗻 𝗿𝗲𝗾𝘂𝗲𝘀𝘁 𝗶𝘁 𝗮𝗴𝗮𝗶𝗻 𝗶𝗳 𝘆𝗼𝘂 𝘄𝗮𝗻𝘁 🫵</b>",
+        reply_markup=InlineKeyboardMarkup(btn)
+    )
+    await asyncio.sleep(120)  # 2 more minutes
+    await mm.delete()
+        
 @Client.on_message(filters.command('delete') & filters.user(ADMINS))
 async def delete(bot, message):
     """Delete file from database"""
