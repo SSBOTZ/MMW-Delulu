@@ -114,7 +114,7 @@ class script(object):
 
 {file_name}
 
-<blockquote>⚠️ ഈ ബോട്ടിൽ നിന്നും തീയറ്റർ പ്രിന്റുകൾ  മാത്രമേ ലഭിക്കുകയുള്ളൂ..⚡</blockquote>
+<blockquote>⚠️ NB:\n\n👉 Please Forward This File Is Sended To Other Channels or Bots Because This File Will Delete After 5 Minutes 👈</blockquote>
              
 ╔═══ ᴊᴏɪɴ ᴡɪᴛʜ ᴜs ═══╗
 ➲ @mallumovieworldmain2
