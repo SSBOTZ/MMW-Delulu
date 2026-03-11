@@ -32,6 +32,9 @@ client5 = AsyncIOMotorClient(DATABASE_URI5)
 db5 = client5[DATABASE_NAME]
 instance5 = Instance.from_db(db5)
 
+
+LIMIT = 50
+
 def create_media_model(instance):
     @instance.register
     class Media(Document):
@@ -160,7 +163,7 @@ async def gets(query, file_type=None, max_results=10, offset=0, filter=False):
         search_filter["file_type"] = file_type
 
     tasks = [
-        model.find(search_filter).sort("$natural", -1).to_list(length=50)
+        model.find(search_filter).sort("$natural", -1).to_list(length=LIMIT)
         for model in ALL_MEDIA
     ]
 
@@ -192,7 +195,7 @@ SEARCH_CACHE = {}
 CACHE_TTL = 300  # seconds (5 minutes)
 
 async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
-    query = query.strip().lower()
+    query = query.strip()
 
     if not query:
         raw_pattern = "."
@@ -228,7 +231,7 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
             search_filter["file_type"] = file_type
 
         tasks = [
-            model.find(search_filter).sort("$natural", -1).to_list(length=None)
+            model.find(search_filter).sort("$natural", -1).to_list(length=LIMIT)
             for model in ALL_MEDIA
         ]
 
