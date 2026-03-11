@@ -128,7 +128,9 @@ async def save_file(media):
     except ValidationError:
         return False
 
-async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
+#method 2 replace gets by   get_search_results for normal Speed 
+
+async def gets(query, file_type=None, max_results=10, offset=0, filter=False):
 
     query = query.strip()
 
@@ -178,6 +180,79 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
         next_offset = ""
 
     return merged, next_offset, total
+
+
+#method 2 for get search result fastly using cache method 
+
+import re
+import asyncio
+import time
+
+SEARCH_CACHE = {}
+CACHE_TTL = 300  # seconds (5 minutes)
+
+async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
+    query = query.strip().lower()
+
+    if not query:
+        raw_pattern = "."
+    elif " " not in query:
+        raw_pattern = rf"(\b|[\.\+\-_]|\s){re.escape(query)}(\b|[\.\+\-_]|\s)"
+    else:
+        raw_pattern = r".*[\s\.\+\-_]".join(map(re.escape, query.split()))
+
+    try:
+        regex = re.compile(raw_pattern, re.IGNORECASE)
+    except re.error:
+        return [], "", 0
+
+    cache_key = f"{query}:{file_type}"
+
+    cached = SEARCH_CACHE.get(cache_key)
+
+    if cached and (time.time() - cached["time"] < CACHE_TTL):
+        merged = cached["results"]
+    else:
+
+        search_filter = {"file_name": regex}
+
+        if USE_CAPTION_FILTER:
+            search_filter = {
+                "$or": [
+                    {"file_name": regex},
+                    {"caption": regex}
+                ]
+            }
+
+        if file_type:
+            search_filter["file_type"] = file_type
+
+        tasks = [
+            model.find(search_filter).sort("$natural", -1).to_list(length=None)
+            for model in ALL_MEDIA
+        ]
+
+        results = await asyncio.gather(*tasks)
+
+        merged = []
+        for r in results:
+            if r:
+                merged.extend(r)
+
+        SEARCH_CACHE[cache_key] = {
+            "results": merged,
+            "time": time.time()
+        }
+
+    total = len(merged)
+
+    page_results = merged[offset: offset + max_results]
+
+    next_offset = offset + len(page_results)
+    if next_offset >= total:
+        next_offset = ""
+
+    return page_results, next_offset, total
 
 
 async def get_bad_files(query, file_type=None, filter=False):
