@@ -413,11 +413,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ident, file_id = query.data.split("#")
         files_ = await get_file_details(file_id)
         if not files_:
-            return await query.answer('No such file exist.')
-        files = files_
-        if isinstance(files_, (list, tuple)) and len(files_) > 0:
-            files = files_[0]
-        title = files.file_name        
+            return await query.answer('🚫 𝗡𝗼 𝗙𝗶𝗹𝗲 𝗪𝗲𝗿𝗲 𝗙𝗼𝘂𝗻𝗱 🚫')
+        files = files_[0]
+        title = files.file_name
         size = get_size(files.file_size)   
         f_caption = files.file_name
         settings = await get_settings(query.message.chat.id)     
@@ -452,11 +450,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ident, file_id = query.data.split("#")
         files_ = await get_file_details(file_id)
         if not files_:
-            return await query.answer('No such file exist.')
-        files = files_
-        if isinstance(files_, (list, tuple)) and len(files_) > 0:
-            files = files_[0]
-        title = files.file_name        
+            return await query.answer('🚫 𝗡𝗼 𝗙𝗶𝗹𝗲 𝗪𝗲𝗿𝗲 𝗙𝗼𝘂𝗻𝗱 🚫')
+        files = files_[0]
+        title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.file_name
         if CUSTOM_FILE_CAPTION:
