@@ -4,8 +4,8 @@ import asyncio
 import logging
 from pyrogram import Client, filters
 from database.users_chats_db import db
-from info import ADMINS
-from utils import broadcast_messages
+from info import *
+from utils import *
 
 logging.basicConfig(
     level=logging.INFO,
