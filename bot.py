@@ -50,7 +50,7 @@ pyroutils.MIN_CHANNEL_ID = -100999999999999
 RESTART_INTERVAL = 86400
 DB_SIZE_LIMIT_MB = 160
 MAX_DB_CAPACITY_MB = 512
-KEEP_ALIVE_URL = "https://moderate-paulie-mmwgoku-46260985.koyeb.app/"
+KEEP_ALIVE_URL = "https://enchanting-rose-hyderabadmy123enchantin-f889e3ba.koyeb.app/"
 ALIVE_INTERVAL = 12
 
 
