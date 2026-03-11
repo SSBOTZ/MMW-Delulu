@@ -100,6 +100,10 @@ async def start(client, message):
     kk, file_id = message.command[1].split("_", 1) if "_" in message.command[1] else (False, False)
     pre = ('checksubp' if kk == 'filep' else 'checksub') if kk else False
 
+    try:
+        await message.delete()
+    except:
+        pass
     status = await ForceSub(client, message, file_id=file_id, mode=pre)
     if not status:
         return
