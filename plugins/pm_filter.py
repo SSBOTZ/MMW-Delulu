@@ -414,8 +414,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         files_ = await get_file_details(file_id)
         if not files_:
             return await query.answer('No such file exist.')
-        #files = files_[0]
-        files = files_[0] if isinstance(files_, list) else files_
+        files = files_[0] if isinstance(files_, (list, tuple)) else files_
         title = files.file_name        
         size = get_size(files.file_size)   
         f_caption = files.file_name
@@ -452,8 +451,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         files_ = await get_file_details(file_id)
         if not files_:
             return await query.answer('No such file exist.')
-        #files = files_[0]
-        files = files_[0] if isinstance(files_, list) else files_
+        files = files_[0] if isinstance(files_, (list, tuple)) else files_
         title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.file_name
