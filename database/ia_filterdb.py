@@ -92,21 +92,6 @@ async def check_file(media):
 
     return "okda"
 
-async def check_file2(media):
-    file_id, file_ref = unpack_new_file_id(media.file_id)
-
-    tasks = [
-        model.collection.find_one({"_id": file_id})
-        for model in ALL_MEDIA
-    ]
-
-    results = await asyncio.gather(*tasks)
-
-    if any(results):
-        return None
-
-    return "okda"
-
 async def is_duplicate(file_id: str) -> bool:
     try:
         tasks = [
@@ -179,16 +164,15 @@ async def save_file(media):
     except ValidationError:
         return False
 
-async def get_search_results(chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
-    
+async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
     query = query.strip()
 
     if not query:
         raw_pattern = '.'
     elif ' ' not in query:
-        raw_pattern = rf'(\b|[\.\+\-_]|\s|&){query}(\b|[\.\+\-_]|\s|&)'
+        raw_pattern = r'(\b|[\.\+\-_:]|\s|&)' + re.escape(query) + r'(\b|[\.\+\-_:]|\s|&)'
     else:
-        raw_pattern = query.replace(' ', r'.*[&\s\.\+\-_()\[\]]')
+        raw_pattern = re.escape(query).replace(r'\ ', r'.*[&\s\.\+\-_()\[\]:]')
 
     try:
         regex = re.compile(raw_pattern, re.IGNORECASE)
