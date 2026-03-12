@@ -33,7 +33,6 @@ client5 = AsyncIOMotorClient(DATABASE_URI5)
 db5 = client5[DATABASE_NAME]
 instance5 = Instance.from_db(db5)
 
-
 LIMIT = 50
 
 def create_media_model(instance):
@@ -48,10 +47,9 @@ def create_media_model(instance):
         caption = fields.StrField(allow_none=True)
 
         class Meta:
-            collection_name = COLLECTION_NAME
             indexes = ["$file_name"]
-            strict = False
-
+            collection_name = COLLECTION_NAME
+            
     return Media
 
 Media = create_media_model(instance)
@@ -75,7 +73,7 @@ async def choose_mediaDB():
         DATABASE_URI5: Media5,
     }
 
-    uri = tempDict.get("indexDB")
+    uri = tempDict['indexDB']
     saveMedia = db_map.get(uri, Media)
 
 async def check_file(media):
@@ -199,7 +197,7 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
         *[
             db.find(filter_dict)
             .sort('$natural', -1)
-            .to_list(length=fetch_len)
+            .to_list(length=LIMIT)
             for db in ALL_MEDIA
         ]
     )
