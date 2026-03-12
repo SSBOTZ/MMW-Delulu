@@ -163,56 +163,59 @@ async def save_file(media):
         return False
 
 async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
+
     query = query.strip()
 
     if not query:
-        raw_pattern = '.'
+        pattern = '.'
     elif ' ' not in query:
-        raw_pattern = r'(\b|[\.\+\-_:]|\s|&)' + re.escape(query) + r'(\b|[\.\+\-_:]|\s|&)'
+        pattern = rf'(\b|[\.\+\-_:]|\s|&){re.escape(query)}(\b|[\.\+\-_:]|\s|&)'
     else:
-        raw_pattern = re.escape(query).replace(r'\ ', r'.*[&\s\.\+\-_()\[\]:]')
+        pattern = re.escape(query).replace(r'\ ', r'.*[&\s\.\+\-_()\[\]:]')
 
     try:
-        regex = re.compile(raw_pattern, re.IGNORECASE)
+        regex = re.compile(pattern, re.IGNORECASE)
     except re.error:
-        return [], '', 0
+        return [], "", 0
 
-    filter_dict = {'file_name': regex}
-    
     if USE_CAPTION_FILTER:
-        filter_dict = {'$or': [{'file_name': regex}, {'caption': regex}]}
+        filter_query = {"$or": [{"file_name": regex}, {"caption": regex}]}
+    else:
+        filter_query = {"file_name": regex}
 
     if file_type:
-        filter_dict['file_type'] = file_type
+        filter_query["file_type"] = file_type
 
     offset = max(offset, 0)
 
-    fetch_len = offset + max_results
-
-    counts = await asyncio.gather(
-        *[db.count_documents(filter_dict) for db in ALL_MEDIA]
-    )
-
-    results = await asyncio.gather(
-        *[
-            db.find(filter_dict)
-            .sort('$natural', -1)
-            .to_list(length=LIMIT)
-            for db in ALL_MEDIA
-        ]
-    )
-
+    count_tasks = [db.count_documents(filter_query) for db in ALL_MEDIA]
+    counts = await asyncio.gather(*count_tasks)
     total_results = sum(counts)
 
-    interleaved = []
-    for group in zip_longest(*results):
-        interleaved.extend([x for x in group if x])
+    find_tasks = [
+        db.find(filter_query)
+        .sort("_id", -1)
+        .skip(offset)
+        .limit(max_results)
+        .to_list(length=max_results)
+        for db in ALL_MEDIA
+    ]
 
-    files = interleaved[offset: offset + max_results]
+    results = await asyncio.gather(*find_tasks)
+
+    files = []
+    for group in zip_longest(*results):
+        for item in group:
+            if item:
+                files.append(item)
+            if len(files) >= max_results:
+                break
+        if len(files) >= max_results:
+            break
 
     next_offset = offset + len(files)
     if next_offset >= total_results:
-        next_offset = ''
+        next_offset = ""
 
     return files, next_offset, total_results
 
