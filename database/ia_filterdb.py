@@ -1,5 +1,6 @@
-import asyncio
 import re
+import asyncio
+from itertools import zip_longest
 import base64
 from struct import pack
 from typing import Optional
@@ -78,6 +79,20 @@ async def choose_mediaDB():
     saveMedia = db_map.get(uri, Media)
 
 async def check_file(media):
+    file_id, _ = unpack_new_file_id(media.file_id)
+    results = await asyncio.gather(
+        Media.collection.find_one({"_id": file_id}, {"_id": 1}),
+        Media2.collection.find_one({"_id": file_id}, {"_id": 1}),
+        Media3.collection.find_one({"_id": file_id}, {"_id": 1}),
+        Media4.collection.find_one({"_id": file_id}, {"_id": 1}),
+        Media5.collection.find_one({"_id": file_id}, {"_id": 1}),
+    )
+    if any(results):
+        return None
+
+    return "okda"
+
+async def check_file2(media):
     file_id, file_ref = unpack_new_file_id(media.file_id)
 
     tasks = [
@@ -92,6 +107,30 @@ async def check_file(media):
 
     return "okda"
 
+async def is_duplicate(file_id: str) -> bool:
+    try:
+        tasks = [
+            coll.find_one({"_id": file_id}, projection={"_id": 1})
+            for coll in ALL_MEDIA
+        ]
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        for idx, result in enumerate(results):
+            if isinstance(result, Exception):
+                logger.warning(f"⚠️ Duplicate check failed in {ALL_COLLECTIONS[idx].__name__}: {result}")
+                continue
+
+            if result:
+                logger.info(f"🔁 Duplicate detected in {ALL_COLLECTIONS[idx].__name__}: {file_id}")
+                return True
+
+        return False
+
+    except Exception as e:
+        logger.error(f"❌ Duplicate check error: {e}")
+        return False
+
 async def save_file(media):
 
     global saveMedia
@@ -101,17 +140,26 @@ async def save_file(media):
 
     file_id, file_ref = unpack_new_file_id(media.file_id)
 
-    file_name = re.sub(
-        r"(_|\+|\-|\.|\[.*?\]|\@.*?|www.*?|MLM)",
-        " ",
-        str(media.file_name)
-    )
+    file_name = re.sub(r"(_|\+|\-|\.|\[.*?\]|\@.*?|www.*?|MLM)", " ", str(media.file_name))
+    file_name = re.sub(r"(_|\+\s|\-|\.|\+|\[MM\]\s|\[MM\]_|\@TvSeriesBay|\@Cinema\sCompany|\@Cinema_Company|\@CC_|\@CC|\@MM_New|\@MM_Linkz|\@MOVIEHUNT|\@CL|\@FBM|\@CKMSERIES|www_DVDWap_Com_|MLM|\@WMR|\[CF\]\s|\[CF\]|\@IndianMoviez|\@tamil_mm|\@infotainmentmedia|\@trolldcompany|\@Rarefilms|\@yamandanmovies|\[YM\]|\@Mallu_Movies|\@YTSLT|\@DailyMovieZhunt|\@I_M_D_B|\@CC_All|\@PM_Old|Dvdworld|\[KMH\]|\@FBM_HW|\@Film_Kottaka|\@CC_X265|\@CelluloidCineClub|\@cinemaheist|\@telugu_moviez|\@CR_Rockers|\@CCineClub|KC_|\[KC\])", " ", str(media.file_name))
 
+    if not file_name.lower().endswith(".mkv"): # Skip File Name Not End With  (.mkv ) Only Add & Support Mkv File Only
+        logger.info(f"⏭️ Skipped (not .mkv): {file_name}")
+        return False, 0
+    if await is_duplicate(file_id): # Duplicate File Never Index
+        logger.warning(f"🔁 𝗗𝘂𝗽𝗹𝗶𝗰𝗮𝘁𝗲 | {file_name} | {file_id[:8]}...")
+        return False, 0
+    if not media or not getattr(media, "file_name", None): # Skip File Without Name
+        logger.warning("⚠️ Skipped: Missing filename")
+        return False, 0
+        
     try:
-
+        if await saveMedia.count_documents({'file_id': file_id}, limit=1):
+            logger.warning(f'{getattr(media, "file_name", "NO_FILE")} is already saved in the active DB!')
+            return False, 0
+        
         caption = getattr(media, "caption", None)
         caption_html = caption.html if caption else None
-
         file = saveMedia(
             file_id=file_id,
             file_ref=file_ref,
@@ -131,132 +179,60 @@ async def save_file(media):
     except ValidationError:
         return False
 
-#method 2 replace gets by   get_search_results for normal Speed 
-
-async def gets(query, file_type=None, max_results=10, offset=0, filter=False):
-
+async def get_search_results(chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
+    
     query = query.strip()
 
     if not query:
-        raw_pattern = "."
-    elif " " not in query:
-        raw_pattern = r"(\b|[\.\+\-_]|\s)" + query + r"(\b|[\.\+\-_]|\s)"
+        raw_pattern = '.'
+    elif ' ' not in query:
+        raw_pattern = rf'(\b|[\.\+\-_]|\s|&){query}(\b|[\.\+\-_]|\s|&)'
     else:
-        raw_pattern = query.replace(" ", r".*[\s\.\+\-_]")
-
-    try:
-        regex = re.compile(raw_pattern, re.IGNORECASE)
-    except:
-        return [], "", 0
-
-    search_filter = {"file_name": regex}
-
-    if USE_CAPTION_FILTER:
-        search_filter = {
-            "$or": [
-                {"file_name": regex},
-                {"caption": regex}
-            ]
-        }
-
-    if file_type:
-        search_filter["file_type"] = file_type
-
-    tasks = [
-        model.find(search_filter).sort("$natural", -1).to_list(length=LIMIT)
-        for model in ALL_MEDIA
-    ]
-
-    results = await asyncio.gather(*tasks)
-
-    merged = []
-    for r in results:
-        merged.extend(r)
-
-    total = len(merged)
-
-    merged = merged[offset:offset + max_results]
-
-    next_offset = offset + len(merged)
-
-    if next_offset >= total:
-        next_offset = ""
-
-    return merged, next_offset, total
-
-
-#method 2 for get search result fastly using cache method 
-
-import re
-import asyncio
-import time
-
-SEARCH_CACHE = {}
-CACHE_TTL = 300  # seconds (5 minutes)
-
-async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
-    query = query.strip()
-
-    if not query:
-        raw_pattern = "."
-    elif " " not in query:
-        raw_pattern = rf"(\b|[\.\+\-_]|\s){re.escape(query)}(\b|[\.\+\-_]|\s)"
-    else:
-        raw_pattern = r".*[\s\.\+\-_]".join(map(re.escape, query.split()))
+        raw_pattern = query.replace(' ', r'.*[&\s\.\+\-_()\[\]]')
 
     try:
         regex = re.compile(raw_pattern, re.IGNORECASE)
     except re.error:
-        return [], "", 0
+        return [], '', 0
 
-    cache_key = f"{query}:{file_type}"
+    filter_dict = {'file_name': regex}
+    
+    if USE_CAPTION_FILTER:
+        filter_dict = {'$or': [{'file_name': regex}, {'caption': regex}]}
 
-    cached = SEARCH_CACHE.get(cache_key)
+    if file_type:
+        filter_dict['file_type'] = file_type
 
-    if cached and (time.time() - cached["time"] < CACHE_TTL):
-        merged = cached["results"]
-    else:
+    offset = max(offset, 0)
 
-        search_filter = {"file_name": regex}
+    fetch_len = offset + max_results
 
-        if USE_CAPTION_FILTER:
-            search_filter = {
-                "$or": [
-                    {"file_name": regex},
-                    {"caption": regex}
-                ]
-            }
+    counts = await asyncio.gather(
+        *[db.count_documents(filter_dict) for db in ALL_MEDIA]
+    )
 
-        if file_type:
-            search_filter["file_type"] = file_type
-
-        tasks = [
-            model.find(search_filter).sort("$natural", -1).to_list(length=LIMIT)
-            for model in ALL_MEDIA
+    results = await asyncio.gather(
+        *[
+            db.find(filter_dict)
+            .sort('$natural', -1)
+            .to_list(length=fetch_len)
+            for db in ALL_MEDIA
         ]
+    )
 
-        results = await asyncio.gather(*tasks)
+    total_results = sum(counts)
 
-        merged = []
-        for r in results:
-            if r:
-                merged.extend(r)
+    interleaved = []
+    for group in zip_longest(*results):
+        interleaved.extend([x for x in group if x])
 
-        SEARCH_CACHE[cache_key] = {
-            "results": merged,
-            "time": time.time()
-        }
+    files = interleaved[offset: offset + max_results]
 
-    total = len(merged)
+    next_offset = offset + len(files)
+    if next_offset >= total_results:
+        next_offset = ''
 
-    page_results = merged[offset: offset + max_results]
-
-    next_offset = offset + len(page_results)
-    if next_offset >= total:
-        next_offset = ""
-
-    return page_results, next_offset, total
-
+    return files, next_offset, total_results
 
 async def get_bad_files(query, file_type=None, filter=False):
 
