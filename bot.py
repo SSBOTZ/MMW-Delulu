@@ -20,7 +20,7 @@ from database.ia_filterdb import (
 )
 from database.users_chats_db import db
 from database.join_reqs import JoinReqs
-from plugins.index import *
+from plugins.index import index_files_to_db, incol
 from plugins.webcode import bot_run
 from utils import *
 from sample_info import tempDict
@@ -95,26 +95,25 @@ async def check_db_space(db_client):
 
 
 async def restart_index(bot):
-    progress = temp.INDEX_PROGRESS
-
-    last_indexed_file = progress.get("last_indexed_file", 0)
-    last_msg_id = progress.get("last_msg_id")
-    chat_id = progress.get("chat_id")
-
-    if not last_msg_id or not chat_id:
+    progress_document = incol.find_one({"_id": "index_progress"})
+    if not progress_document:
         logger.info("✅ No previous index")
         return
+    
+    if progress_document:
+        last_indexed_file = progress_document.get("last_indexed_file", 0)
+        last_msg_id = progress_document.get("last_msg_id")
+        chat_id = progress_document.get("chat_id")
+        logger.info(f"📂 Restarting Index | LastFile: {last_indexed_file}")
 
-    logger.info(f"📂 Restarting Index | LastFile: {last_indexed_file}")
+        temp.CURRENT = int(last_indexed_file)
 
-    temp.CURRENT = int(last_indexed_file)
+        msg = await bot.send_message(
+            chat_id=int(LOG_CHANNEL),
+            text="♻ 𝘿𝙚𝙡𝙪𝙡𝙪'𝙨 𝙄𝙣𝙙𝙚𝙭 𝙍𝙚𝙨𝙩𝙖𝙧𝙩𝙞𝙣𝙜... ♻️"
+        )
 
-    msg = await bot.send_message(
-        chat_id=int(LOG_CHANNEL),
-        text="♻ 𝘿𝙚𝙡𝙪𝙡𝙪'𝙨 𝙄𝙣𝙙𝙚𝙭 𝙍𝙚𝙨𝙩𝙖𝙧𝙩𝙞𝙣𝙜... ♻️"
-    )
-
-    await index_files_to_db(last_msg_id, chat_id, msg, bot)
+        await index_files_to_db(last_msg_id, chat_id, msg, bot)
 
 class Bot(Client):
 
