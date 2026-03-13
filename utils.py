@@ -35,13 +35,20 @@ class temp(object):
     BANNED_USERS = []
     BANNED_CHATS = []
     ME = None
-    CURRENT=int(os.environ.get("SKIP", 2))
+    CURRENT = int(os.environ.get("SKIP", 2))
     CANCEL = False
     MELCOW = {}
     U_NAME = None
     B_NAME = None
     SETTINGS = {}
     SEND_ALL_TEMP = {}
+
+    # Index progress storage (replaces MongoDB incol)
+    INDEX_PROGRESS = {
+        "last_indexed_file": 0,
+        "last_msg_id": 0,
+        "chat_id": 0
+    }
 
 async def check_loop_sub(client, message):
     count = 0
