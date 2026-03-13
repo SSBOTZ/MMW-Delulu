@@ -2,7 +2,6 @@ import re
 import asyncio
 from itertools import zip_longest
 import base64
-import logging
 from struct import pack
 from typing import Optional
 from pyrogram.file_id import FileId
@@ -13,18 +12,6 @@ from umongo import Instance, Document, fields
 from marshmallow.exceptions import ValidationError
 from info import *
 from sample_info import tempDict
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-formatter = logging.Formatter(
-    '%(asctime)s | %(levelname)-8s | %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
 
 client = AsyncIOMotorClient(DATABASE_URI)
 db = client[DATABASE_NAME]
@@ -114,17 +101,14 @@ async def is_duplicate(file_id: str) -> bool:
 
         for idx, result in enumerate(results):
             if isinstance(result, Exception):
-                logger.warning(f"⚠️ Duplicate check failed in {ALL_COLLECTIONS[idx].__name__}: {result}")
                 continue
 
             if result:
-                logger.info(f"🔁 Duplicate detected in {ALL_COLLECTIONS[idx].__name__}: {file_id}")
                 return True
 
         return False
 
     except Exception as e:
-        logger.error(f"❌ Duplicate check error: {e}")
         return False
 
 async def save_file(media):
@@ -139,16 +123,6 @@ async def save_file(media):
     file_name = re.sub(r"(_|\+|\-|\.|\[.*?\]|\@.*?|www.*?|MLM)", " ", str(media.file_name))
     file_name = re.sub(r"(_|\+\s|\-|\.|\+|\[MM\]\s|\[MM\]_|\@TvSeriesBay|\@Cinema\sCompany|\@Cinema_Company|\@CC_|\@CC|\@MM_New|\@MM_Linkz|\@MOVIEHUNT|\@CL|\@FBM|\@CKMSERIES|www_DVDWap_Com_|MLM|\@WMR|\[CF\]\s|\[CF\]|\@IndianMoviez|\@tamil_mm|\@infotainmentmedia|\@trolldcompany|\@Rarefilms|\@yamandanmovies|\[YM\]|\@Mallu_Movies|\@YTSLT|\@DailyMovieZhunt|\@I_M_D_B|\@CC_All|\@PM_Old|Dvdworld|\[KMH\]|\@FBM_HW|\@Film_Kottaka|\@CC_X265|\@CelluloidCineClub|\@cinemaheist|\@telugu_moviez|\@CR_Rockers|\@CCineClub|KC_|\[KC\])", " ", str(media.file_name))
 
-    if not file_name.lower().endswith(".mkv"): # Skip File Name Not End With  (.mkv ) Only Add & Support Mkv File Only
-        logger.info(f"⏭️ Skipped (not .mkv): {file_name}")
-        return False, 0
-    if await is_duplicate(file_id): # Duplicate File Never Index
-        logger.warning(f"🔁 𝗗𝘂𝗽𝗹𝗶𝗰𝗮𝘁𝗲 | {file_name} | {file_id[:8]}...")
-        return False, 0
-    if not media or not getattr(media, "file_name", None): # Skip File Without Name
-        logger.warning("⚠️ Skipped: Missing filename")
-        return False, 0
-        
     try:
         if await saveMedia.count_documents({'file_id': file_id}, limit=1):
             logger.warning(f'{getattr(media, "file_name", "NO_FILE")} is already saved in the active DB!')
