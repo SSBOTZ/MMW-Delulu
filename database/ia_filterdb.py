@@ -181,9 +181,9 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
     tasks = [
         Media.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
         Media2.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
-        Media3.find(filter_query).sort('$natural', -1).to_list(length=LIMIT)
+        Media3.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
         Media4.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
-        Media5.find(filter_query).sort('$natural', -1).to_list(length=LIMIT)
+        Media5.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
     ]
 
     files_media, files_media2, files_media3 = await asyncio.gather(*tasks)
