@@ -59,7 +59,7 @@ async def alive():
     if not KEEP_ALIVE_URL:
         return
 
-    timeout = aiohttp.ClientTimeout(total=8)
+    timeout = aiohttp.ClientTimeout(total=10)
 
     async with aiohttp.ClientSession(timeout=timeout) as session:
 
@@ -124,9 +124,9 @@ class Bot(Client):
             api_id=API_ID,
             api_hash=API_HASH,
             bot_token=BOT_TOKEN,
-            workers=120,
+            workers=200,
             plugins={"root": "plugins"},
-            sleep_threshold=30,
+            sleep_threshold=20,
         )
 
     async def restart_loop(self):
