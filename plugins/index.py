@@ -7,14 +7,13 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from info import *
 from database.ia_filterdb import *
 from utils import temp
+import pymongo
 
 lock = asyncio.Lock()
 
-INDEX_PROGRESS = {
-    "last_indexed_file": 0,
-    "last_msg_id": 0,
-    "chat_id": 0
-}
+inclient = pymongo.MongoClient(DATABASE_URI5)
+indb = inclient[DATABASE_NAME]
+incol = indb['index']
 
 ALL_MEDIA = [Media, Media2, Media3, Media4, Media5]
 
@@ -197,9 +196,11 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
 
                     remaining_index = lst_msg_id - current
 
-                    temp.INDEX_PROGRESS["last_indexed_file"] = current
-                    temp.INDEX_PROGRESS["last_msg_id"] = lst_msg_id
-                    temp.INDEX_PROGRESS["chat_id"] = chat
+                    incol.update_one(
+                        {"_id": "index_progress"},
+                        {"$set": {"last_indexed_file": current, "last_msg_id": lst_msg_id, "chat_id": chat}},
+                        upsert=True
+                    )
 
                     await msg.edit_text(
                         text=f"<b>╭ ▸ ETC: </b>{remaining_time_str} ❙ <b>Remaining:</b> <code>{remaining_index}</code>\n"
@@ -287,9 +288,4 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                 f'<b>╰ ▸ Non:</b> <code>{no_media}</code>\n'
             )
 
-            temp.INDEX_PROGRESS = {
-                "last_indexed_file": 0,
-                "last_msg_id": 0,
-                "chat_id": 0
-            }
-            
+            incol.delete_one({"_id": "index_progress"})
