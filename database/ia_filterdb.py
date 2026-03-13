@@ -123,10 +123,16 @@ async def save_file(media):
     file_name = re.sub(r"(_|\+|\-|\.|\[.*?\]|\@.*?|www.*?|MLM)", " ", str(media.file_name))
     file_name = re.sub(r"(_|\+\s|\-|\.|\+|\[MM\]\s|\[MM\]_|\@TvSeriesBay|\@Cinema\sCompany|\@Cinema_Company|\@CC_|\@CC|\@MM_New|\@MM_Linkz|\@MOVIEHUNT|\@CL|\@FBM|\@CKMSERIES|www_DVDWap_Com_|MLM|\@WMR|\[CF\]\s|\[CF\]|\@IndianMoviez|\@tamil_mm|\@infotainmentmedia|\@trolldcompany|\@Rarefilms|\@yamandanmovies|\[YM\]|\@Mallu_Movies|\@YTSLT|\@DailyMovieZhunt|\@I_M_D_B|\@CC_All|\@PM_Old|Dvdworld|\[KMH\]|\@FBM_HW|\@Film_Kottaka|\@CC_X265|\@CelluloidCineClub|\@cinemaheist|\@telugu_moviez|\@CR_Rockers|\@CCineClub|KC_|\[KC\])", " ", str(media.file_name))
 
+    if await is_duplicate(file_id):
+        return False
+        
     try:
-        if await saveMedia.count_documents({'file_id': file_id}, limit=1):
-            logger.warning(f'{getattr(media, "file_name", "NO_FILE")} is already saved in the active DB!')
-            return False, 0
+        for db in ALL_MEDIA:
+            if await db.count_documents({'file_id': file_id}, limit=1): # Check File Present In All Db
+                return False
+        
+        if await saveMedia.count_documents({'file_id': file_id}, limit=1): # Check File Present In choose_mediaDB Db
+            return False
         
         caption = getattr(media, "caption", None)
         caption_html = caption.html if caption else None
@@ -150,61 +156,59 @@ async def save_file(media):
         return False
 
 async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
-
     query = query.strip()
 
     if not query:
-        pattern = '.'
+        raw_pattern = '.'
     elif ' ' not in query:
-        pattern = rf'(\b|[\.\+\-_:]|\s|&){re.escape(query)}(\b|[\.\+\-_:]|\s|&)'
+        raw_pattern = r'(\b|[\.\+\-_:]|\s|&)' + query + r'(\b|[\.\+\-_:]|\s|&)'
     else:
-        pattern = re.escape(query).replace(r'\ ', r'.*[&\s\.\+\-_()\[\]:]')
+        raw_pattern = query.replace(' ', r'.*[&\s\.\+\-_()\[\]:]')
 
     try:
-        regex = re.compile(pattern, re.IGNORECASE)
-    except re.error:
-        return [], "", 0
+        regex = re.compile(raw_pattern, flags=re.IGNORECASE)
+    except:
+        return [], '', 0
 
     if USE_CAPTION_FILTER:
-        filter_query = {"$or": [{"file_name": regex}, {"caption": regex}]}
+        filter_query = {'$or': [{'file_name': regex}, {'caption': regex}]}
     else:
-        filter_query = {"file_name": regex}
+        filter_query = {'file_name': regex}
 
     if file_type:
-        filter_query["file_type"] = file_type
+        filter_query['file_type'] = file_type
 
-    offset = max(offset, 0)
-
-    count_tasks = [db.count_documents(filter_query) for db in ALL_MEDIA]
-    counts = await asyncio.gather(*count_tasks)
-    total_results = sum(counts)
-
-    find_tasks = [
-        db.find(filter_query)
-        .sort("_id", -1)
-        .skip(offset)
-        .limit(max_results)
-        .to_list(length=max_results)
-        for db in ALL_MEDIA
+    tasks = [
+        Media.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
+        Media2.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
+        Media3.find(filter_query).sort('$natural', -1).to_list(length=LIMIT)
+        Media4.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
+        Media5.find(filter_query).sort('$natural', -1).to_list(length=LIMIT)
     ]
 
-    results = await asyncio.gather(*find_tasks)
+    files_media, files_media2, files_media3 = await asyncio.gather(*tasks)
 
-    files = []
-    for group in zip_longest(*results):
-        for item in group:
-            if item:
-                files.append(item)
-            if len(files) >= max_results:
-                break
-        if len(files) >= max_results:
-            break
+    if offset < 0:
+        offset = 0
 
+    interleaved_files = []
+    seen_file_ids = set()
+
+    all_files = files_media + files_media2 + files_media3
+
+    for file in all_files:
+        if file['file_id'] not in seen_file_ids:
+            interleaved_files.append(file)
+            seen_file_ids.add(file['file_id'])
+
+    files = interleaved_files[offset:offset + max_results]
+    total_results = len(interleaved_files)
     next_offset = offset + len(files)
-    if next_offset >= total_results:
-        next_offset = ""
 
-    return files, next_offset, total_results
+    if next_offset < total_results:
+        return files, next_offset, total_results
+    else:
+        return files, '', total_results
 
 async def get_bad_files(query, file_type=None, filter=False):
 
