@@ -141,7 +141,7 @@ async def start(client, message):
     if f_caption is None:
         f_caption = f"{files.file_name}"
     await query.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...", cache_time=10)
-    ok = await client.send_cached_media(
+    ok = await message.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
