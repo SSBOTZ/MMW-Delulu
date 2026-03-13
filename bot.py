@@ -20,7 +20,7 @@ from database.ia_filterdb import (
 )
 from database.users_chats_db import db
 from database.join_reqs import JoinReqs
-from plugins.index import index_files_to_db, incol
+from plugins.index import *
 from plugins.webcode import bot_run
 from utils import *
 from sample_info import tempDict
