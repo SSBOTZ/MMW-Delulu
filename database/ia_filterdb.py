@@ -2,6 +2,7 @@ import re
 import asyncio
 from itertools import zip_longest
 import base64
+import logging
 from struct import pack
 from typing import Optional
 from pyrogram.file_id import FileId
@@ -12,6 +13,18 @@ from umongo import Instance, Document, fields
 from marshmallow.exceptions import ValidationError
 from info import *
 from sample_info import tempDict
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+formatter = logging.Formatter(
+    '%(asctime)s | %(levelname)-8s | %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 client = AsyncIOMotorClient(DATABASE_URI)
 db = client[DATABASE_NAME]
