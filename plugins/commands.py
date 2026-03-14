@@ -107,12 +107,13 @@ async def start(client, message):
     if not files_:
         pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("ascii")).split("_", 1)
         try:
-            await message.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...", cache_time=10)
+            m = await message.reply_text("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...")
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
                 protect_content=True if pre == 'filep' else False,
                 )
+            await m.delete()
             filetype = msg.media
             file = getattr(msg, filetype.value)
             title = file.file_name
@@ -140,7 +141,8 @@ async def start(client, message):
             f_caption=f_caption
     if f_caption is None:
         f_caption = f"{files.file_name}"
-    await message.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...", cache_time=10)
+    k = await message.reply_text("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...")
+    
     ok = await message.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
@@ -151,6 +153,7 @@ async def start(client, message):
                 [InlineKeyboardButton("𝗠𝗼𝘃𝗶𝗲 𝗚𝗿𝗼𝘂𝗽", url=GRP_LNK)]
             ]
         ))
+    await k.delete()
     da = await ok.reply(
             "<b>‼️ 𝗜𝗠𝗣𝗢𝗥𝗧𝗔𝗡𝗧 ‼️\n\n"
             "<blockquote>⚠️ 𝗙𝗶𝗹𝗲 𝘄𝗶𝗹𝗹 𝗯𝗲 𝗗𝗲𝗹𝗲𝘁𝗲𝗱 𝗶𝗻 5 𝗠𝗶𝗻𝘂𝘁𝗲𝘀.</blockquote>\n\n"
