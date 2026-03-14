@@ -44,9 +44,14 @@ async def spell_check(original_msg: Message, reply_msg: Message):
         pass
 
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
-async def give_filter(client, message):
-    await auto_filter(client, message)
-    
+async def give_filters(client, message):
+    if await global_filters(client, message):
+        return
+    elif await manual_filters(client, message):
+        return
+    else:
+        await auto_filter(client, message)
+        
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
