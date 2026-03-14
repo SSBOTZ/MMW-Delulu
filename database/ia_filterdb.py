@@ -186,7 +186,8 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
         Media5.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
     ]
 
-    files_media, files_media2, files_media3 = await asyncio.gather(*tasks)
+    #files_media, files_media2, files_media3, files_media4, files_media5 = await asyncio.gather(*tasks)
+    results = await asyncio.gather(*tasks)
 
     if offset < 0:
         offset = 0
@@ -194,9 +195,16 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
     interleaved_files = []
     seen_file_ids = set()
 
-    all_files = files_media + files_media2 + files_media3
+    all_files = (
+        files_media +
+        files_media2 +
+        files_media3 +
+        files_media4 +
+        files_media5
+    )
+    allfiles = [file for sub in results for file in sub]
 
-    for file in all_files:
+    for file in allfiles:
         if file['file_id'] not in seen_file_ids:
             interleaved_files.append(file)
             seen_file_ids.add(file['file_id'])
