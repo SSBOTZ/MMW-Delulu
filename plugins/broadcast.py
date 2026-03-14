@@ -6,50 +6,111 @@ import datetime
 import time
 import logging
 from info import ADMINS
-from utils import *
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
+async def send_msg(bot, user_id, msg):
+    try:
+        await msg.copy(user_id)
+        return "success"
+
+    except FloodWait as e:
+        await asyncio.sleep(e.value)
+        await msg.copy(user_id)
+        return "success"
+
+    except UserIsBlocked:
+        return "blocked"
+
+    except InputUserDeactivated:
+        return "deleted"
+
+    except PeerIdInvalid:
+        return "deleted"
+
+    except Exception:
+        return "failed"
+
+
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
-async def verupikkals(bot, message):
+async def broadcast(bot, message):
+
     users = await db.get_all_users()
     b_msg = message.reply_to_message
-    sts = await message.reply_text(
-        text='Broadcasting your messages...'
-    )
+
+    sts = await message.reply_text("🚀 **Starting Broadcast...**")
+
     start_time = time.time()
+
     total_users = await db.total_users_count()
-    done = 0
-    blocked = 0
-    deleted = 0
-    failed =0
 
     success = 0
+    blocked = 0
+    deleted = 0
+    failed = 0
+    done = 0
+
+    tasks = []
+
     async for user in users:
-        if 'id' in user:
-            pti, sh = await broadcast_messages(int(user['id']), b_msg)
-            if pti:
-                success += 1
-            elif pti == False:
-                if sh == "Blocked":
+        if "id" not in user:
+            continue
+
+        user_id = int(user["id"])
+
+        tasks.append(send_msg(bot, user_id, b_msg))
+
+        if len(tasks) == 50:  # batch sending (FAST)
+            results = await asyncio.gather(*tasks)
+            tasks = []
+
+            for r in results:
+                done += 1
+
+                if r == "success":
+                    success += 1
+                elif r == "blocked":
                     blocked += 1
-                elif sh == "Deleted":
+                elif r == "deleted":
                     deleted += 1
-                elif sh == "Error":
+                else:
                     failed += 1
+
+            await sts.edit(
+                f"📡 **Broadcast Running**\n\n"
+                f"👥 Total Users: `{total_users}`\n"
+                f"✅ Success: `{success}`\n"
+                f"🚫 Blocked: `{blocked}`\n"
+                f"🗑 Deleted: `{deleted}`\n"
+                f"⚠ Failed: `{failed}`\n"
+                f"📤 Completed: `{done}/{total_users}`"
+            )
+
+    if tasks:
+        results = await asyncio.gather(*tasks)
+
+        for r in results:
             done += 1
-            if not done % 20:
-                await sts.edit(f"Broadcast in progress:\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")    
-        else:
-            # Handle the case where 'id' key is missing in the user dictionary
-            done += 1
-            failed += 1
-            if not done % 20:
-                try:
-                    await sts.edit(f"Broadcast in progress:\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}") 
-                except:
-                    pass
-    
-    time_taken = datetime.timedelta(seconds=int(time.time()-start_time))
-    await sts.edit(f"Broadcast Completed:\nCompleted in {time_taken} seconds.\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")
+
+            if r == "success":
+                success += 1
+            elif r == "blocked":
+                blocked += 1
+            elif r == "deleted":
+                deleted += 1
+            else:
+                failed += 1
+
+    time_taken = datetime.timedelta(seconds=int(time.time() - start_time))
+
+    await sts.edit(
+        f"✅ **Broadcast Completed**\n\n"
+        f"⏱ Time Taken: `{time_taken}`\n\n"
+        f"👥 Total Users: `{total_users}`\n"
+        f"✅ Success: `{success}`\n"
+        f"🚫 Blocked: `{blocked}`\n"
+        f"🗑 Deleted: `{deleted}`\n"
+        f"⚠ Failed: `{failed}`"
+    )
