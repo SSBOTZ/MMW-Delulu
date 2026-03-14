@@ -17,46 +17,96 @@ client = AsyncIOMotorClient(DATABASE_URI)
 db = client[DATABASE_NAME]
 instance = Instance.from_db(db)
 
+@instance.register
+class Media(Document):
+    file_id = fields.StrField(attribute='_id')
+    file_ref = fields.StrField(allow_none=True)
+    file_name = fields.StrField(required=True)
+    file_size = fields.IntField(required=True)
+    file_type = fields.StrField(allow_none=True)
+    mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
+
+    class Meta:
+        indexes = ('$file_name', )
+        collection_name = COLLECTION_NAME
+        
+
 client2 = AsyncIOMotorClient(DATABASE_URI2)
 db2 = client2[DATABASE_NAME]
 instance2 = Instance.from_db(db2)
+
+@instance2.register
+class Media2(Document):
+    file_id = fields.StrField(attribute='_id')
+    file_ref = fields.StrField(allow_none=True)
+    file_name = fields.StrField(required=True)
+    file_size = fields.IntField(required=True)
+    file_type = fields.StrField(allow_none=True)
+    mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
+
+    class Meta:
+        indexes = ('$file_name', )
+        collection_name = COLLECTION_NAME
 
 client3 = AsyncIOMotorClient(DATABASE_URI3)
 db3 = client3[DATABASE_NAME]
 instance3 = Instance.from_db(db3)
 
+@instance3.register
+class Media3(Document):
+    file_id = fields.StrField(attribute='_id')
+    file_ref = fields.StrField(allow_none=True)
+    file_name = fields.StrField(required=True)
+    file_size = fields.IntField(required=True)
+    file_type = fields.StrField(allow_none=True)
+    mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
+
+    class Meta:
+        indexes = ('$file_name', )
+        collection_name = COLLECTION_NAME
+
+
 client4 = AsyncIOMotorClient(DATABASE_URI4)
 db4 = client4[DATABASE_NAME]
 instance4 = Instance.from_db(db4)
+
+@instance4.register
+class Media4(Document):
+    file_id = fields.StrField(attribute='_id')
+    file_ref = fields.StrField(allow_none=True)
+    file_name = fields.StrField(required=True)
+    file_size = fields.IntField(required=True)
+    file_type = fields.StrField(allow_none=True)
+    mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
+
+    class Meta:
+        indexes = ('$file_name', )
+        collection_name = COLLECTION_NAME
+
 
 client5 = AsyncIOMotorClient(DATABASE_URI5)
 db5 = client5[DATABASE_NAME]
 instance5 = Instance.from_db(db5)
 
+@instance5.register
+class Media5(Document):
+    file_id = fields.StrField(attribute='_id')
+    file_ref = fields.StrField(allow_none=True)
+    file_name = fields.StrField(required=True)
+    file_size = fields.IntField(required=True)
+    file_type = fields.StrField(allow_none=True)
+    mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
+
+    class Meta:
+        indexes = ('$file_name', )
+        collection_name = COLLECTION_NAME
+
 LIMIT = 50
-
-def create_media_model(instance):
-    @instance.register
-    class Media(Document):
-        file_id = fields.StrField(attribute="_id")
-        file_ref = fields.StrField(allow_none=True)
-        file_name = fields.StrField(required=True)
-        file_size = fields.IntField(required=True)
-        file_type = fields.StrField(allow_none=True)
-        mime_type = fields.StrField(allow_none=True)
-        caption = fields.StrField(allow_none=True)
-
-        class Meta:
-            indexes = ["$file_name"]
-            collection_name = COLLECTION_NAME
-            
-    return Media
-
-Media = create_media_model(instance)
-Media2 = create_media_model(instance2)
-Media3 = create_media_model(instance3)
-Media4 = create_media_model(instance4)
-Media5 = create_media_model(instance5)
 
 ALL_MEDIA = [Media, Media2, Media3, Media4, Media5]
 
@@ -186,7 +236,6 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
         Media5.find(filter_query).sort('$natural', -1).to_list(length=LIMIT),
     ]
 
-    #files_media, files_media2, files_media3, files_media4, files_media5 = await asyncio.gather(*tasks)
     results = await asyncio.gather(*tasks)
 
     if offset < 0:
@@ -195,13 +244,6 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
     interleaved_files = []
     seen_file_ids = set()
 
-    all_files = (
-        files_media +
-        files_media2 +
-        files_media3 +
-        files_media4 +
-        files_media5
-    )
     allfiles = [file for sub in results for file in sub]
 
     for file in allfiles:
