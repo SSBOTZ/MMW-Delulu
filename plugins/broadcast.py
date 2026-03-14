@@ -1,116 +1,99 @@
-from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from database.users_chats_db import db
 from pyrogram import Client, filters
-import asyncio
+from pyrogram.errors import InputUserDeactivated, FloodWait, UserIsBlocked
 import datetime
 import time
-import logging
+from database.users_chats_db import db
 from info import ADMINS
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-
-async def send_msg(bot, user_id, msg):
-    try:
-        await msg.copy(user_id)
-        return "success"
-
-    except FloodWait as e:
-        await asyncio.sleep(e.value)
-        await msg.copy(user_id)
-        return "success"
-
-    except UserIsBlocked:
-        return "blocked"
-
-    except InputUserDeactivated:
-        return "deleted"
-
-    except PeerIdInvalid:
-        return "deleted"
-
-    except Exception:
-        return "failed"
-
+import asyncio
 
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
 async def broadcast(bot, message):
-
-    users = await db.get_all_users()
-    b_msg = message.reply_to_message
-
-    sts = await message.reply_text("🚀 **Starting Broadcast...**")
+    if len(message.command) == 1:
+        matrix = 0
+    else:
+        try:
+            matrix = int(message.text.split(None, 1)[1])
+        except:
+            await message.reply("❌ Invalid number")
+            return
 
     start_time = time.time()
+    b_msg = message.reply_to_message
+    sts = await message.reply("🚀 Broadcasting started...")
 
-    total_users = await db.total_users_count()
+    users = await db.get_all_users()
+    users_list = await users.to_list(None)
+    total_users = len(users_list)
 
+    users = await db.get_all_users()
+
+    skipped_count = 0
     success = 0
-    blocked = 0
-    deleted = 0
     failed = 0
-    done = 0
-
-    tasks = []
+    batch = []
 
     async for user in users:
-        if "id" not in user:
+        if skipped_count < matrix:
+            skipped_count += 1
             continue
 
-        user_id = int(user["id"])
+        batch.append(int(user["id"]))
 
-        tasks.append(send_msg(bot, user_id, b_msg))
+        if len(batch) == 20:
+            tasks = [b_msg.copy(chat_id=u) for u in batch]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        if len(tasks) == 50:  # batch sending (FAST)
-            results = await asyncio.gather(*tasks)
-            tasks = []
-
-            for r in results:
-                done += 1
-
-                if r == "success":
-                    success += 1
-                elif r == "blocked":
-                    blocked += 1
-                elif r == "deleted":
-                    deleted += 1
-                else:
+            for i, result in enumerate(results):
+                if isinstance(result, FloodWait):
+                    await asyncio.sleep(result.x)
+                    try:
+                        await b_msg.copy(chat_id=batch[i])
+                        success += 1
+                    except:
+                        failed += 1
+                elif isinstance(result, (InputUserDeactivated, UserIsBlocked)):
+                    await db.delete_user(batch[i])
                     failed += 1
+                elif isinstance(result, Exception):
+                    failed += 1
+                else:
+                    success += 1
 
+            batch = []
+
+        process = success + failed
+
+        if process % 500 == 1:
+            elapsed = datetime.timedelta(seconds=int(time.time() - start_time))
             await sts.edit(
-                f"📡 **Broadcast Running**\n\n"
-                f"👥 Total Users: `{total_users}`\n"
-                f"✅ Success: `{success}`\n"
-                f"🚫 Blocked: `{blocked}`\n"
-                f"🗑 Deleted: `{deleted}`\n"
-                f"⚠ Failed: `{failed}`\n"
-                f"📤 Completed: `{done}/{total_users}`"
+                f"📢 Broadcast Running\n\n"
+                f"👥 Total: {total_users}\n"
+                f"⏩ Progress: {process+matrix}\n"
+                f"✅ Success: {success}\n"
+                f"❌ Failed: {failed}\n"
+                f"⏳ Time: {elapsed}"
             )
 
-    if tasks:
-        results = await asyncio.gather(*tasks)
+    if batch:
+        tasks = [b_msg.copy(chat_id=u) for u in batch]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        for r in results:
-            done += 1
-
-            if r == "success":
-                success += 1
-            elif r == "blocked":
-                blocked += 1
-            elif r == "deleted":
-                deleted += 1
-            else:
+        for i, result in enumerate(results):
+            if isinstance(result, (InputUserDeactivated, UserIsBlocked)):
+                await db.delete_user(batch[i])
                 failed += 1
+            elif isinstance(result, Exception):
+                failed += 1
+            else:
+                success += 1
 
     time_taken = datetime.timedelta(seconds=int(time.time() - start_time))
 
     await sts.edit(
-        f"✅ **Broadcast Completed**\n\n"
-        f"⏱ Time Taken: `{time_taken}`\n\n"
-        f"👥 Total Users: `{total_users}`\n"
-        f"✅ Success: `{success}`\n"
-        f"🚫 Blocked: `{blocked}`\n"
-        f"🗑 Deleted: `{deleted}`\n"
-        f"⚠ Failed: `{failed}`"
+        f"✅ Broadcast Completed\n\n"
+        f"👥 Total Users: {total_users}\n"
+        f"⏭ Skipped: {skipped_count}\n"
+        f"✅ Success: {success}\n"
+        f"❌ Failed: {failed}\n"
+        f"⏱ Time Taken: {time_taken}"
     )
