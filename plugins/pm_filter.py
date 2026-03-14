@@ -44,14 +44,9 @@ async def spell_check(original_msg: Message, reply_msg: Message):
         pass
 
 @Client.on_message((filters.group | filters.private) & filters.text & filters.incoming)
-async def give_filters(client, message):
-    if await global_filters(client, message):
-        return
-    elif await manual_filters(client, message):
-        return
-    else:
-        await auto_filter(client, message)
-        
+async def give_filter(client, message):
+    await auto_filter(client, message)
+    
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
@@ -334,7 +329,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if f_caption is None:
             f_caption = f"{files.file_name}"
         try:            
-            await query.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...")
+            await query.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...", show_alert=True)
             if (AUTH_CHANNEL or REQ_CHANNEL) and not await is_subscribed(client, query):
                 await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
                 return
@@ -370,7 +365,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 f_caption = f_caption
         if f_caption is None:
             f_caption = f"{title}"
-        await query.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...")
+        await query.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...", show_alert=True)
         ok = await client.send_cached_media(
             chat_id=query.from_user.id,
             file_id=file_id,
