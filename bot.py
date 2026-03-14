@@ -184,7 +184,8 @@ class Bot(Client):
                 await media_cls.ensure_indexes()
                 logger.info(f"📑 Index Ready → {media_cls.__name__}")
             except Exception as e:
-                logger.error(f"❌ Index Failed → {media_cls.__name__} | {e}")
+                pass
+
         selected = False
 
         for db_client, uri, label in DB_OPTIONS:
