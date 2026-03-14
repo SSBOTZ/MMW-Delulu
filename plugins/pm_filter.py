@@ -124,105 +124,6 @@ async def next_page(bot, query):
         pass
 
     await query.answer()
-    temp.SEND_ALL_TEMP[key] = files
-    
-async def auto_filter(client, msg):
-    if not msg.text:
-        return
-
-    settings = await get_settings(msg.chat.id)
-
-    if msg.text.startswith("/"):
-        await asyncio.sleep(5)
-        await msg.delete()
-        return
-
-    if re.search(r'(?im)(?:https?://|www\.|t\.me/|telegram\.dog/)\S+|@[a-z0-9_]{5,32}\b', msg.text):
-        await msg.delete()
-        return
-
-    if re.findall(r"((^/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", msg.text):
-        await msg.delete()
-        return
-
-    if len(msg.text) < 2:
-        await msg.delete()
-        return
-
-    search = msg.text.strip()
-    files, offset, total_results = await get_search_results(search, offset=0, filter=True)
-
-    if not files:
-        reqst_gle = search.replace(" ", "+")
-        btn_google = InlineKeyboardButton(
-            "🔍 𝗖𝗼𝗿𝗿𝗲𝗰𝘁 𝗦𝗽𝗲𝗹𝗹𝗶𝗻𝗴 (Google) 🔎",
-            url=f"https://www.google.com/search?q={reqst_gle}"
-        )
-        keyboard = InlineKeyboardMarkup([[btn_google]])
-        warn_msg = await msg.reply_text(
-            text=(
-                f"<b>❝ 𝖧𝖾𝗒 {msg.from_user.mention} താഴെ ഉള്ള കാര്യങ്ങൾ ശ്രദ്ധിക്കുക ❞\n\n"
-                f"🔹കറക്റ്റ് സ്പെല്ലിംഗിൽ ചോദിക്കുക. (ഇംഗ്ലീഷിൽ മാത്രം)\n\n"
-                f"🔸സിനിമകൾ ഇംഗ്ലീഷിൽ Type ചെയ്ത് മാത്രം ചോദിക്കുക.\n\n"
-                f"🔹OTT റിലീസ് ആകാത്ത സിനിമകൾ ചോദിക്കരുത്.\n\n"
-                f"🔸സിനിമയുടെ പേര് [വർഷം ഭാഷ] ഈ രീതിയിൽ ചോദിക്കുക.\n\n"
-                f"🔹സിനിമ Request ചെയ്യുമ്പോൾ Symbols ഒഴിവാക്കുക. [+:;'*!-&.. etc !!!</b>"
-            ),
-            reply_markup=keyboard
-        )
-        asyncio.create_task(spell_check(msg, warn_msg))
-        return
-
-    pre = 'filep' if settings['file_secure'] else 'file'
-
-    if settings["button"]:
-        btn = [
-            [InlineKeyboardButton(f"[{get_size(file.file_size)}] ⊳ {file.file_name}", callback_data=f'{pre}#{file.file_id}')]
-            for file in files
-        ]
-    else:
-        btn = [
-            [
-                InlineKeyboardButton(file.file_name, callback_data=f'{pre}#{file.file_id}'),
-                InlineKeyboardButton(get_size(file.file_size), callback_data=f'{pre}#{file.file_id}')
-            ]
-            for file in files
-        ]
-
-    if offset:
-        key = f"{msg.chat.id}-{msg.id}"
-        BUTTONS[key] = search
-        req = msg.from_user.id if msg.from_user else 0
-        btn.append([
-            InlineKeyboardButton("➥ 𝗣𝗮𝗴𝗲", callback_data="pages"),
-            InlineKeyboardButton(f"1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-            InlineKeyboardButton("Nᴇxᴛ ⤷", callback_data=f"next_{req}_{key}_{offset}")
-        ])
-
-    cap = f"<b>✨ ʜᴇʏ {msg.from_user.mention}\n📁 ʏᴏᴜʀ {search} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🚀</b>"
-    result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-    asyncio.create_task(auto_delete(msg, result_msg))
-
-@Client.on_callback_query(filters.regex(r"^spolling"))
-async def advantage_spoll_choker(bot, query):
-    _, user, movie_ = query.data.split('#')
-    if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer(script.ALRT_TXT, show_alert=True)
-    if movie_ == "close_spellcheck":
-        return await query.message.delete()
-    movies = SPELL_CHECK.get(query.message.reply_to_message.id)
-    if not movies:
-        return await query.answer(script.OLD_ALRT_TXT, show_alert=True)
-    movie = movies[(int(movie_))]
-    await query.answer(script.TOP_ALRT_MSG)
-    k = await manual_filters(bot, query.message, text=movie)
-    if k == False:
-        files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
-        if files:
-            k = (movie, files, offset, total_results)
-            await auto_filter(bot, query, k)
-        else:
-            k = await query.message.edit(script.MVE_NT_FND)
     
 @Client.on_callback_query()
 async def cb_handler(client: Client, query: CallbackQuery):
@@ -433,6 +334,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if f_caption is None:
             f_caption = f"{files.file_name}"
         try:
+            await query.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...", cache_time=10)
             if (AUTH_CHANNEL or REQ_CHANNEL) and not await is_subscribed(client, query):
                 await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
                 return
@@ -853,3 +755,201 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
     await query.answer('Piracy Is Crime')
+
+async def auto_filter(client, msg):
+    if not msg.text:
+        return
+
+    settings = await get_settings(msg.chat.id)
+
+    if msg.text.startswith("/"):
+        await asyncio.sleep(5)
+        await msg.delete()
+        return
+
+    if re.search(r'(?im)(?:https?://|www\.|t\.me/|telegram\.dog/)\S+|@[a-z0-9_]{5,32}\b', msg.text):
+        await msg.delete()
+        return
+
+    if re.findall(r"((^/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", msg.text):
+        await msg.delete()
+        return
+
+    if len(msg.text) < 2:
+        await msg.delete()
+        return
+
+    search = msg.text.strip()
+    files, offset, total_results = await get_search_results(search, offset=0, filter=True)
+
+    if not files:
+        reqst_gle = search.replace(" ", "+")
+        btn_google = InlineKeyboardButton(
+            "🔍 𝗖𝗼𝗿𝗿𝗲𝗰𝘁 𝗦𝗽𝗲𝗹𝗹𝗶𝗻𝗴 (Google) 🔎",
+            url=f"https://www.google.com/search?q={reqst_gle}"
+        )
+        keyboard = InlineKeyboardMarkup([[btn_google]])
+        warn_msg = await msg.reply_text(
+            text=(
+                f"<b>❝ 𝖧𝖾𝗒 {msg.from_user.mention} താഴെ ഉള്ള കാര്യങ്ങൾ ശ്രദ്ധിക്കുക ❞\n\n"
+                f"🔹കറക്റ്റ് സ്പെല്ലിംഗിൽ ചോദിക്കുക. (ഇംഗ്ലീഷിൽ മാത്രം)\n\n"
+                f"🔸സിനിമകൾ ഇംഗ്ലീഷിൽ Type ചെയ്ത് മാത്രം ചോദിക്കുക.\n\n"
+                f"🔹OTT റിലീസ് ആകാത്ത സിനിമകൾ ചോദിക്കരുത്.\n\n"
+                f"🔸സിനിമയുടെ പേര് [വർഷം ഭാഷ] ഈ രീതിയിൽ ചോദിക്കുക.\n\n"
+                f"🔹സിനിമ Request ചെയ്യുമ്പോൾ Symbols ഒഴിവാക്കുക. [+:;'*!-&.. etc !!!</b>"
+            ),
+            reply_markup=keyboard
+        )
+        asyncio.create_task(spell_check(msg, warn_msg))
+        return
+
+    pre = 'filep' if settings['file_secure'] else 'file'
+
+    if settings["button"]:
+        btn = [
+            [InlineKeyboardButton(f"[{get_size(file.file_size)}] ⊳ {file.file_name}", callback_data=f'{pre}#{file.file_id}')]
+            for file in files
+        ]
+    else:
+        btn = [
+            [
+                InlineKeyboardButton(file.file_name, callback_data=f'{pre}#{file.file_id}'),
+                InlineKeyboardButton(get_size(file.file_size), callback_data=f'{pre}#{file.file_id}')
+            ]
+            for file in files
+        ]
+
+    if offset:
+        key = f"{msg.chat.id}-{msg.id}"
+        BUTTONS[key] = search
+        req = msg.from_user.id if msg.from_user else 0
+        btn.append([
+            InlineKeyboardButton("➥ 𝗣𝗮𝗴𝗲", callback_data="pages"),
+            InlineKeyboardButton(f"1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
+            InlineKeyboardButton("Nᴇxᴛ ⤷", callback_data=f"next_{req}_{key}_{offset}")
+        ])
+
+    cap = f"<b>✨ ʜᴇʏ {msg.from_user.mention}\n📁 ʏᴏᴜʀ {search} ꜰɪʟᴇꜱ ᴀʀᴇ ʀᴇᴀᴅʏ 🚀</b>"
+    result_msg = await msg.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+    asyncio.create_task(auto_delete(msg, result_msg))
+
+
+
+async def manual_filters(client, message, text=False):
+    group_id = message.chat.id
+    name = text or message.text
+    reply_id = message.reply_to_message.id if message.reply_to_message else message.id
+    keywords = await get_filters(group_id)
+
+    for keyword in reversed(sorted(keywords, key=len)):
+        pattern = r"( |^|[^\w])" + re.escape(keyword) + r"( |$|[^\w])"
+        if re.search(pattern, name, flags=re.IGNORECASE):
+            reply_text, btn, alert, fileid = await find_filter(group_id, keyword)
+
+            if reply_text:
+                reply_text = reply_text.replace("\\n", "\n").replace("\\t", "\t")
+
+            if btn is not None:
+                try:
+                    if fileid == "None":
+                        if btn == "[]":
+                            await client.send_message(group_id, reply_text, disable_web_page_preview=True)
+                        else:
+                            button = eval(btn)
+                            await client.send_message(
+                                group_id,
+                                reply_text,
+                                disable_web_page_preview=True,
+                                reply_markup=InlineKeyboardMarkup(button),
+                                reply_to_message_id=reply_id
+                            )
+                    elif btn == "[]":
+                        await client.send_cached_media(
+                            group_id,
+                            fileid,
+                            caption=reply_text or "",
+                            reply_to_message_id=reply_id
+                        )
+                    else:
+                        button = eval(btn)
+                        await message.reply_cached_media(
+                            fileid,
+                            caption=reply_text or "",
+                            reply_markup=InlineKeyboardMarkup(button),
+                            reply_to_message_id=reply_id
+                        )
+                except Exception as e:
+                    pass
+                break
+    else:
+        return False
+
+
+async def global_filters(client, message, text=False):
+    group_id = message.chat.id
+    name = text or message.text
+    reply_id = message.reply_to_message.id if message.reply_to_message else message.id
+    keywords = await get_gfilters('gfilters')
+    for keyword in reversed(sorted(keywords, key=len)):
+        pattern = r"( |^|[^\w])" + re.escape(keyword) + r"( |$|[^\w])"
+        if re.search(pattern, name, flags=re.IGNORECASE):
+            reply_text, btn, alert, fileid = await find_gfilter('gfilters', keyword)
+
+            if reply_text:
+                reply_text = reply_text.replace("\\n", "\n").replace("\\t", "\t")
+
+            if btn is not None:
+                try:
+                    if fileid == "None":
+                        if btn == "[]":
+                            knd3 = await client.send_message(
+                                group_id, 
+                                reply_text, 
+                                disable_web_page_preview=True,
+                                reply_to_message_id=reply_id
+                            )
+                            await asyncio.sleep()
+                            await knd3.delete()
+                            await message.delete()
+
+                        else:
+                            button = eval(btn)
+                            knd2 = await client.send_message(
+                                group_id,
+                                reply_text,
+                                disable_web_page_preview=True,
+                                reply_markup=InlineKeyboardMarkup(button),
+                                reply_to_message_id=reply_id
+                            )
+                            await asyncio.sleep()
+                            await knd2.delete()
+                            await message.delete()
+
+                    elif btn == "[]":
+                        knd1 = await client.send_cached_media(
+                            group_id,
+                            fileid,
+                            caption=reply_text or "",
+                            reply_to_message_id=reply_id
+                        )
+                        await asyncio.sleep()
+                        await knd1.delete()
+                        await message.delete()
+
+                    else:
+                        button = eval(btn)
+                        knd = await message.reply_cached_media(
+                            fileid,
+                            caption=reply_text or "",
+                            reply_markup=InlineKeyboardMarkup(button),
+                            reply_to_message_id=reply_id
+                        )
+                        await asyncio.sleep()
+                        await knd.delete()
+                        await message.delete()
+
+                except Exception as e:
+                    logger.exception(e)
+                break
+    else:
+        return False
