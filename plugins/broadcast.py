@@ -63,7 +63,7 @@ async def broadcast(bot, message):
 
         process = success + failed
 
-        if process % 500 == 1:
+        if process % 40 == 1:
             elapsed = datetime.timedelta(seconds=int(time.time() - start_time))
             await sts.edit(
                 f"📢 Broadcast Running\n\n"
