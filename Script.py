@@ -118,18 +118,19 @@ class script(object):
 𝖶𝗂𝗍𝗁 𝖳𝗁𝗂𝗌 𝖧𝖾𝗅𝗉 𝖸𝗈𝗎 𝖶𝗂𝗅𝗅 𝖴𝗇𝖽𝖾𝗋𝗌𝗍𝖺𝗇𝖽 𝖧𝗈𝗐 𝖳𝗈 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖡𝗈𝗍🏌️
     
 𝖢𝗁𝖾𝖼𝗄 𝖡𝖾𝗅𝗈𝗐 𝖧𝖾𝗅𝗉 𝖥𝗎𝗇𝖼𝗍𝗂𝗈𝗇𝗌🤍</b>"""
-  
+    
     CUSTOM_FILE_CAPTION = """<b>𝐻𝑒𝑙𝑙𝑜 👋 {mention} 😍
 
 {file_name}
 
-💾 Fɪʟᴇ Sɪᴢᴇ : <code>{file_size}</code>
+💾 𝐅ɪʟᴇ 𝐒ɪᴢᴇ : <code>{file_size}</code>
 
-<blockquote>⚠️ NB:\n👉 Please Forward This File Is Sended To Other Channels or Bots Because This File Will Delete After 5 Minutes 👈</blockquote>
-             
+<blockquote>⚠️ 𝗡𝗕 :  
+👉 𝗣𝗹𝗲𝗮𝘀𝗲 𝗙𝗼𝗿𝘄𝗮𝗿𝗱 𝗧𝗵𝗶𝘀 𝗙𝗶𝗹𝗲 𝗧𝗼 𝗢𝘁𝗵𝗲𝗿 𝗖𝗵𝗮𝗻𝗻𝗲𝗹𝘀 𝗢𝗿 𝗕𝗼𝘁𝘀 𝗕𝗲𝗰𝗮𝘂𝘀𝗲 𝗧𝗵𝗶𝘀 𝗙𝗶𝗹𝗲 𝗪𝗶𝗹𝗹 𝗕𝗲 𝗗𝗲𝗹𝗲𝘁𝗲𝗱 𝗔𝗳𝘁𝗲𝗿 5 𝗠𝗶𝗻𝘂𝘁𝗲𝘀 👈</blockquote>
+
 ╔═══ ᴊᴏɪɴ ᴡɪᴛʜ ᴜs ═══╗
 ➲ @mallumovieworldmain2
-▣ 🔗 <a href=https://t.me/+CU-WKDczkn9iODNl> ➪ 𝗠𝗼𝘃𝗶𝗲 𝗚𝗿𝗼𝘂𝗽</a> 📽️ 
+▣ 🔗 <a href="https://t.me/+CU-WKDczkn9iODNl">➪ 𝗠𝗼𝘃𝗶𝗲 𝗚𝗿𝗼𝘂𝗽</a> 📽️
 ╚═══ ᴊᴏɪɴ ᴡɪᴛʜ ᴜs ═══╝</b>""" 
     
     STATUS_TXT = """📂 𝖳𝗈𝗍𝖺𝗅 𝖥𝗂𝗅𝖾𝗌 - <code>{}</code>
