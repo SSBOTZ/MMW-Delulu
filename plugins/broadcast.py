@@ -9,10 +9,10 @@ import asyncio
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
 async def broadcast(bot, message):
     if len(message.command) == 1:
-        matrix = 0
+        delulu = 0
     else:
         try:
-            matrix = int(message.text.split(None, 1)[1])
+            delulu = int(message.text.split(None, 1)[1])
         except:
             await message.reply("❌ Invalid number")
             return
@@ -33,7 +33,7 @@ async def broadcast(bot, message):
     batch = []
 
     async for user in users:
-        if skipped_count < matrix:
+        if skipped_count < delulu:
             skipped_count += 1
             continue
 
