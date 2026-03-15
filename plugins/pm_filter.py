@@ -311,7 +311,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(alert, show_alert=True)
     
     elif query.data.startswith("file"):
-        await query.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...")
         ident, file_id = query.data.split("#")
         files_ = await get_file_details(file_id)
         if not files_:
@@ -345,6 +344,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
         except Exception as e:
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
+    
     elif query.data.startswith("checksub"):
         await query.answer("🗃️ Yᴏᴜʀ Fɪʟᴇ Is Sᴇɴᴅɪɴɢ, PLᴇᴀsᴇ Wᴀɪᴛ...")
         if (AUTH_CHANNEL or REQ_CHANNEL) and not await is_subscribed(client, query):
