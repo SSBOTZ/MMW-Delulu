@@ -2,15 +2,24 @@ class script(object):
     START_TXT = """
 <b>𝖧𝖾𝗒 👋 {} 𝖨 𝖠𝗆 <a href=https://t.me/{}>{}</a> 𝖧𝖺𝗉𝗉𝗒 🖤 𝖳𝗈 𝖧𝖺𝗏𝖾 𝖸𝗈𝗎
 
-𝖨 𝖠𝗆 𝖯𝗈𝗐𝖾𝗋 𝖥𝗎𝗅𝗅 𝖠𝗎𝗍𝗈 𝖥𝗂𝗅𝗍𝖾𝗋 + 𝖬𝗈𝗏𝗂𝖾 𝖲𝖾𝖺𝗋𝖼𝗁 + 𝖬𝖺𝗇𝗎𝖺𝗅 𝖥𝗂𝗅𝗍𝖾𝗋 𝖡𝗈𝗍 ⚙
+⚙ 𝖨 𝖠𝗆 𝖯𝗈𝗐𝖾𝗋 𝖥𝗎𝗅𝗅 𝖠𝗎𝗍𝗈 𝖥𝗂𝗅𝗍𝖾𝗋 + 𝖬𝗈𝗏𝗂𝖾 𝖲𝖾𝖺𝗋𝖼𝗁 + 𝖬𝖺𝗇𝗎𝖺𝗅 𝖥𝗂𝗅𝗍𝖾𝗋 𝖡𝗈𝗍 ⚙
 
-𝖨 𝖠𝗆 𝖠 𝖡𝗈𝗍 𝖯𝗋𝗈𝗏𝗂𝖽𝗂𝗇𝗀 𝖬𝗈𝗏𝗂𝖾𝗌 𝖠𝗇𝖽 𝖲𝖾𝗋𝗂𝖾𝗌 𝖲𝗈 𝖠𝖽𝖽 𝖳𝗈 𝖸𝗈𝗎𝗋 𝖥𝖺𝗆. 𝖳𝗁𝖾𝗇 𝖨 𝖶𝗂𝗅𝗅 𝗌𝖾𝗇𝗍 𝖳𝗁𝖾 𝖬𝗈𝗏𝗂𝖾𝗌⏳
+🎬 𝖨 𝖠𝗆 𝖠 𝖡𝗈𝗍 𝖯𝗋𝗈𝗏𝗂𝖽𝗂𝗇𝗀 𝖬𝗈𝗏𝗂𝖾𝗌 𝖠𝗇𝖽 𝖲𝖾𝗋𝗂𝖾𝗌.  
+➕ 𝖲𝗈 𝖠𝖽𝖽 𝖬𝖾 𝖳𝗈 𝖸𝗈𝗎𝗋 𝖥𝖺𝗆, 𝖳𝗁𝖾𝗇 𝖨 𝖶𝗂𝗅𝗅 𝖲𝖾𝗇𝖽 𝖳𝗁𝖾 𝖬𝗈𝗏𝗂𝖾𝗌 ⏳
 
-𝖢𝗅𝗂𝖼𝗄 𝖡𝖾𝗅𝗈𝗐 𝖴𝗌𝖾𝖿𝗎𝗅 𝖡𝗎𝗍𝗍𝗈𝗇𝗌 🫶
+📥 𝖧𝖾𝗋𝖾 𝖸𝗈𝗎 𝖢𝖺𝗇 𝖱𝖾𝗊𝗎𝖾𝗌𝗍 𝖬𝗈𝗏𝗂𝖾𝗌  
+𝖩𝗎𝗌𝗍 𝖲𝖾𝗇𝖽 𝖬𝗈𝗏𝗂𝖾 𝖭𝖺𝗆𝖾 𝖶𝗂𝗍𝗁 𝖯𝗋𝗈𝗉𝖾𝗋 <a href='https://www.google.com/'>𝖦𝗈𝗈𝗀𝗅𝖾</a> 𝖲𝗉𝖾𝗅𝗅𝗂𝗇𝗀..!!
 
-<blockquote>⚠️ ഈ ബോട്ടിൽ നിന്നും സിനിമകൾ മാത്രമേ ലഭിക്കുകയുള്ളൂ..⚡</blockquote>
-</b>"""
-    
+📖 𝖥𝗈𝗋 𝖬𝗈𝗋𝖾 𝖣𝖾𝗍𝖺𝗂𝗅𝗌 𝖢𝗅𝗂𝖼𝗄 ➜ /help
+
+👨‍💻 𝖢𝗈𝗇𝗍𝖺𝖼𝗍 𝖡𝗈𝗍 𝖣𝖾𝗏𝖾𝗅𝗈𝗉𝖾𝗋 (𝖮𝗋) 𝖱𝖾𝗉𝗈𝗋𝗍 𝖡𝗎𝗀𝗌  
+👉 @Mrkimebot
+
+👇 𝖢𝗅𝗂𝖼𝗄 𝖡𝖾𝗅𝗈𝗐 𝖴𝗌𝖾𝖿𝗎𝗅 𝖡𝗎𝗍𝗍𝗈𝗇𝗌 🫶
+
+<blockquote>⚠️ ഈ ബോട്ടിൽ നിന്നും സിനിമകൾ മാത്രമേ ലഭിക്കുകയുള്ളൂ.. ⚡</blockquote>
+</b>
+"""
     ABOUT_TXT = """<b>🤖 𝑴𝒚 𝑵𝒂𝒎𝒆 : <a href=https://t.me/{}>{}</a>
     
 📝 𝑳𝒂𝒏𝒈𝒖𝒂𝒈𝒆 : <a href='https://t.me/+JRWRXAzDwkc2NDA1'>𝑷𝒚𝒕𝒉𝒐𝒏</a>
@@ -22,7 +31,7 @@ class script(object):
 📢 𝑼𝒑𝒅𝒂𝒕𝒆 𝑪𝒉𝒂𝒏𝒏𝒆𝒍 : <a href=https://t.me/mallumovieworldmain2> MMW BOTZ </a></b>"""
 
     AUTOFILTER_TXT = """<b>
- Bro Or Sis, ഈ ഒരു ബോട്ട് <a href=https://t.me/mallumovieworldmain3> 𝐆𝐑𝐎𝐔𝐏 </a> ൻ്റെ Aᴜᴛᴏ Fɪʟᴛᴇʀ Bᴏᴛ ᴠ1 ആണ്, ബോട്ട് പഴയതും പുതിയതുമായ സിനിമകൾ മാത്രം ലഭിക്കുന്ന ബോട്ട് ആണ് ..!!  🤗⚠
+ Bro Or Sis, ഈ ഒരു ബോട്ട് <a href=https://t.me/mallumovieworldmain3> 𝐆𝐑𝐎𝐔𝐏 </a> ൻ്റെ Aᴜᴛᴏ Fɪʟᴛᴇʀ Bᴏᴛ ആണ്, ബോട്ട് പഴയതും പുതിയതുമായ സിനിമകൾ മാത്രം ലഭിക്കുന്ന ബോട്ട് ആണ് ..!!  🤗⚠
 
 ️📌 𝗔𝗻𝘆 𝗛𝗲𝗹𝗽 𝗣𝗹𝗲𝗮𝘀𝗲 𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗔𝗱𝗺𝗶𝗻 : @Mrkimebot</b>"""
 
@@ -114,10 +123,13 @@ class script(object):
 
 {file_name}
 
-<blockquote>⚠️ NB:\n\n👉 Please Forward This File Is Sended To Other Channels or Bots Because This File Will Delete After 5 Minutes 👈</blockquote>
+💾 Fɪʟᴇ Sɪᴢᴇ : <code>{file_size}</code>
+
+<blockquote>⚠️ NB:\n👉 Please Forward This File Is Sended To Other Channels or Bots Because This File Will Delete After 5 Minutes 👈</blockquote>
              
 ╔═══ ᴊᴏɪɴ ᴡɪᴛʜ ᴜs ═══╗
 ➲ @mallumovieworldmain2
+▣ 🔗 <a href=https://t.me/+CU-WKDczkn9iODNl> ➪ 𝗠𝗼𝘃𝗶𝗲 𝗚𝗿𝗼𝘂𝗽</a> 📽️ 
 ╚═══ ᴊᴏɪɴ ᴡɪᴛʜ ᴜs ═══╝</b>""" 
     
     STATUS_TXT = """📂 𝖳𝗈𝗍𝖺𝗅 𝖥𝗂𝗅𝖾𝗌 - <code>{}</code>
