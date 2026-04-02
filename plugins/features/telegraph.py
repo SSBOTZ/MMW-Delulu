@@ -96,3 +96,48 @@ async def upload_handler(client, message: Message):
         await msg.edit_text(
             f"⚠️ **𝑬𝒓𝒓𝒐𝒓 𝑶𝒄𝒄𝒖𝒓𝒓𝒆𝒅**\n`{e}`"
         )
+
+@Client.on_message(filters.command('ilink'))
+async def img_2_link(bot, message):
+    if not message.reply_to_message or not message.reply_to_message.photo:
+        return await message.reply('Reply to photo')
+    path = await message.reply_to_message.download()
+    with open(path, 'rb') as f:
+        r = requests.post("https://uguu.se/upload", files={'files[]': f})
+    os.remove(path)
+    if r.status_code == 200:
+        url = r.json()['files'][0]['url']
+        await message.reply(f"Link: {url}")
+
+@Client.on_message(filters.command('img_2_link'))
+async def imglink(bot, message):
+    # ❗ Check if user replied to a photo
+    if not message.reply_to_message or not message.reply_to_message.photo:
+        return await message.reply(
+            "⚠️ **Oops!**\n"
+            "👉 Please reply to an image to convert it into a link 🖼️🔗"
+        )
+
+    # ⬇️ Download the image
+    path = await message.reply_to_message.download()
+
+    # ⬆️ Upload to Uguu
+    with open(path, 'rb') as f:
+        r = requests.post("https://uguu.se/upload", files={'files[]': f})
+
+    # 🧹 Remove local file
+    os.remove(path)
+
+    # ✅ Handle response
+    if r.status_code == 200:
+        url = r.json()['files'][0]['url']
+        await message.reply(
+            "✨ **Upload Successful!** ✨\n\n"
+            f"🔗 **Your Image Link:**\n`{url}`\n\n"
+            "🚀 Share it anywhere you like!"
+        )
+    else:
+        await message.reply(
+            "❌ **Upload Failed!**\n"
+            "😓 Please try again later."
+        )
